@@ -3,3 +3,7 @@ vivian_toolkit*.html
 sanitize.py
 harness*.html
 *.part
+
+# Private financial model — never commit
+model.html
+model*.html
