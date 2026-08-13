@@ -131,6 +131,55 @@ select{cursor:pointer;-webkit-appearance:none;appearance:none;
   .wrap{padding:0 15px 90px}h2{font-size:26px}
   .row{flex-wrap:wrap}.tab{padding:10px 11px;font-size:12.5px}
 }
+
+/* ── slider ── */
+.rng{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:3px;padding:0;border:0;
+  background:linear-gradient(90deg,var(--border2),var(--acc));margin:10px 0 4px;cursor:pointer}
+.rng::-webkit-slider-thumb{-webkit-appearance:none;width:19px;height:19px;border-radius:50%;background:var(--acc);
+  border:3px solid var(--bg);box-shadow:0 0 0 1px var(--acc);cursor:grab}
+.rng::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--acc);border:2px solid var(--bg);cursor:grab}
+.rngl{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--t5)}
+.tiny{font-size:11px;color:var(--t5);letter-spacing:0;text-transform:none}
+
+/* ── chips ── */
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{background:var(--panel2);border:1px solid var(--border2);color:var(--t4);border-radius:20px;
+  font-family:var(--sans);font-size:12px;font-weight:300;padding:5px 12px;cursor:pointer;transition:all .18s}
+.chip:hover{border-color:var(--t4);color:var(--t2)}
+.chip.on{background:rgba(127,231,196,.12);border-color:var(--acc);color:var(--acc)}
+.chip.has{border-color:var(--border2);color:var(--t2)}
+.chip.gap{border-style:dashed;color:var(--t5)}
+.chip .c{opacity:.6;margin-left:5px;font-size:10.5px}
+
+/* ── calibration ── */
+.cal{display:flex;gap:10px;align-items:flex-end;height:120px;padding-top:6px}
+.calb{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;height:100%}
+.calb .pair{display:flex;gap:3px;align-items:flex-end;width:100%;height:100%;justify-content:center}
+.calb .pair i{width:15px;border-radius:3px 3px 0 0;min-height:2px;transition:height .5s}
+.calb .pair i.p{background:var(--border2)}
+.calb .pair i.a{background:var(--acc)}
+.calb b{font-size:10px;color:var(--t5);font-weight:400}
+.legend{display:flex;gap:16px;font-size:11px;color:var(--t4);margin-top:12px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px}
+
+/* ── budget bar ── */
+.bar{height:9px;border-radius:6px;background:var(--border);overflow:hidden;margin:9px 0 7px}
+.bar i{display:block;height:100%;border-radius:6px;background:var(--acc);transition:width .5s}
+.bar i.over{background:var(--bad)}
+.bar i.warn{background:var(--warn)}
+.split{display:flex;justify-content:space-between;font-size:12px;color:var(--t3)}
+
+/* ── practice ── */
+.prompt{font-family:var(--serif);font-size:23px;font-weight:300;line-height:1.4;color:var(--text);margin-bottom:6px}
+.timer{font-family:var(--serif);font-size:40px;font-weight:300;color:var(--acc);line-height:1;letter-spacing:.02em}
+.timer.low{color:var(--warn)}
+.timer.out{color:var(--bad)}
+.star{border-left:2px solid var(--border2);padding-left:14px;margin:11px 0}
+.star b{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--t4);
+  font-weight:500;margin-bottom:3px}
+.star p{font-size:13.5px;color:var(--t2);line-height:1.7;margin-bottom:11px;white-space:pre-wrap}
+.star p:last-child{margin-bottom:0}
+
 </style>
 </head>
 <body>
@@ -259,6 +308,124 @@ select{cursor:pointer;-webkit-appearance:none;appearance:none;
   </div>
   <div id="pplList"></div>
 </section>
+<!-- ══════════ DECISIONS ══════════ -->
+<section class="view" id="v-dec">
+  <h2>Decisions</h2>
+  <p class="lede">Write down what you think will happen, and how sure you are, <em>before</em> you find out. Then come back and check. Over time this tells you something you cannot get any other way: whether your fear is information or noise.</p>
+  <div class="tiles" id="decTiles"></div>
+
+  <div class="form">
+    <div><label>The decision or worry</label><input id="dcT" placeholder="Take the hard elective instead of the easy one"></div>
+    <div class="grid" style="margin-top:9px">
+      <div style="grid-column:1/-1"><label>What I predict will happen</label>
+        <textarea id="dcP" placeholder="I'll be the worst in the room and regret it"></textarea></div>
+    </div>
+    <div style="margin-top:9px">
+      <label>How sure am I? <span id="dcCV" style="color:var(--acc);font-size:13px;letter-spacing:0">70%</span></label>
+      <input type="range" id="dcC" class="rng" min="50" max="99" value="70" oninput="document.getElementById('dcCV').textContent=this.value+'%'">
+      <div class="rngl"><span>coin flip</span><span>near certain</span></div>
+    </div>
+    <div class="grid" style="margin-top:9px">
+      <div><label>Check back on</label><input id="dcD" type="date"></div>
+    </div>
+    <div class="btnrow"><button class="btn pri" onclick="addDec()">Log prediction</button></div>
+  </div>
+
+  <div class="sec">Calibration</div>
+  <div class="card" id="decCal"></div>
+
+  <div class="sec">Open <span class="tiny" id="decOpenN"></span></div>
+  <div id="decOpen"></div>
+  <div class="sec">Resolved</div>
+  <div id="decDone"></div>
+</section>
+
+<!-- ══════════ STORIES ══════════ -->
+<section class="view" id="v-story">
+  <h2>Stories</h2>
+  <p class="lede">The interview answers you'll need in October. Write each one once, tag what it demonstrates, and let the coverage map show you which competency you have nothing for.</p>
+  <div class="tiles" id="stTiles"></div>
+
+  <div class="sec">Coverage</div>
+  <div class="card"><div class="chips" id="stCover"></div>
+    <div class="tiny" style="margin-top:11px">Click a competency to filter. Grey means you have no story for it yet.</div></div>
+
+  <div class="sec">Practice</div>
+  <div class="card" id="stPractice"></div>
+
+  <div class="sec" id="stFormSec">Add a story</div>
+  <div class="form">
+    <div><label>Title</label><input id="sTitle" placeholder="The forecast nobody wanted to own"></div>
+    <div style="margin-top:10px"><label>What it demonstrates</label><div class="chips" id="sTags"></div></div>
+    <div class="grid" style="grid-template-columns:1fr;margin-top:10px">
+      <div><label>Situation</label><textarea id="sS" placeholder="Where, when, what was at stake"></textarea></div>
+      <div><label>Task</label><textarea id="sT" placeholder="What was actually yours to solve"></textarea></div>
+      <div><label>Action</label><textarea id="sA" placeholder="What you did — specific verbs, first person"></textarea></div>
+      <div><label>Result</label><textarea id="sR" placeholder="A number if you have one, and what changed"></textarea></div>
+    </div>
+    <div class="btnrow">
+      <button class="btn pri" id="sSave" onclick="saveStory()">Save story</button>
+      <button class="btn" id="sCancel" style="display:none" onclick="cancelStory()">Cancel edit</button>
+    </div>
+  </div>
+  <div id="stList"></div>
+</section>
+
+<!-- ══════════ MONEY ══════════ -->
+<section class="view" id="v-money">
+  <h2>Runway</h2>
+  <p class="lede">Two years without a salary is the part that's actually worth measuring. Not to worry harder — to replace a vague dread with a number you can check.</p>
+  <div class="tiles" id="mnTiles"></div>
+
+  <div class="card">
+    <div class="sec" style="margin-top:0">Setup</div>
+    <div class="grid">
+      <div><label>Cash on hand</label><input id="mCash" type="number" step="100" placeholder="0"></div>
+      <div><label>Monthly budget</label><input id="mBud" type="number" step="50" placeholder="0"></div>
+      <div><label>Money coming in / mo</label><input id="mIn" type="number" step="50" placeholder="0"></div>
+    </div>
+    <div class="btnrow"><button class="btn" onclick="saveMoney()">Save</button></div>
+    <div id="mnRunway"></div>
+  </div>
+
+  <div class="sec">This month</div>
+  <div class="card"><div id="mnBar"></div><div id="mnCats" class="chips" style="margin-top:13px"></div></div>
+
+  <div class="sec">Monthly spend</div>
+  <div class="card"><div class="bars" id="mnBars"></div><div class="barlabels" id="mnBarL"></div></div>
+
+  <div class="sec">Log an expense</div>
+  <div class="form">
+    <div class="grid">
+      <div><label>Date</label><input id="eDate" type="date"></div>
+      <div><label>Amount</label><input id="eAmt" type="number" step="0.01" placeholder="0.00"></div>
+      <div><label>Category</label><select id="eCat"></select></div>
+      <div><label>Note</label><input id="eNote" placeholder="optional"></div>
+    </div>
+    <div class="btnrow"><button class="btn pri" onclick="addExp()">Log expense</button></div>
+  </div>
+  <div id="mnList"></div>
+</section>
+
+<!-- ══════════ WEEK ══════════ -->
+<section class="view" id="v-week">
+  <h2>The week</h2>
+  <p class="lede">Everything the other tabs already know, counted for you — then three questions worth answering while it's fresh.</p>
+  <div class="tiles" id="wkTiles"></div>
+  <div class="card" id="wkAuto"></div>
+
+  <div class="sec">Review</div>
+  <div class="form">
+    <div class="grid" style="grid-template-columns:1fr">
+      <div><label>What actually worked</label><textarea id="wA" placeholder="Be specific. Not &quot;was productive&quot;."></textarea></div>
+      <div><label>What I avoided</label><textarea id="wB" placeholder="The thing you moved to next week again."></textarea></div>
+      <div><label>One thing for next week</label><textarea id="wC" placeholder="One. Not a list."></textarea></div>
+    </div>
+    <div class="btnrow"><button class="btn pri" onclick="saveWeek()">Save this week</button></div>
+  </div>
+  <div class="sec">Past weeks</div>
+  <div id="wkList"></div>
+</section>
 
 </div><!-- /wrap -->
 <script>
@@ -270,7 +437,8 @@ var DB={
   get:function(k,d){try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
   set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){toast('Could not save — storage full or blocked');return false}}
 };
-var KEYS={courses:'d_courses',dl:'d_deadlines',rec:'d_rec',run:'d_runs',goal:'d_goal',ppl:'d_ppl'};
+var KEYS={courses:'d_courses',dl:'d_deadlines',rec:'d_rec',run:'d_runs',goal:'d_goal',ppl:'d_ppl',
+          dec:'d_decisions',story:'d_stories',mcfg:'d_moneycfg',exp:'d_expenses',week:'d_weeks'};
 
 /* ── helpers ───────────────────────────────────────────────────── */
 var DAY=864e5;
@@ -562,6 +730,412 @@ function renderPpl(){
     }).join('');
 }
 
+/* ══════════ DECISIONS ══════════ */
+var resolving=null;
+window.addDec=function(){
+  var t=$('dcT').value.trim();
+  if(!t){toast('Needs a decision');return}
+  var a=DB.get(KEYS.dec,[]);
+  a.push({id:uid(),t:t,p:$('dcP').value.trim(),c:parseInt($('dcC').value,10),
+          d:$('dcD').value,made:iso(today()),res:null});
+  DB.set(KEYS.dec,a);
+  $('dcT').value='';$('dcP').value='';$('dcD').value='';
+  $('dcC').value=70;$('dcCV').textContent='70%';
+  renderDec();paintCounts();toast('Logged — come back to it');
+};
+window.openResolve=function(id){resolving=(resolving===id?null:id);renderDec();
+  var el=$('rw-'+id);if(el)el.focus()};
+window.resolveDec=function(id,v){
+  var a=DB.get(KEYS.dec,[]),w=$('rw-'+id),what=w?w.value.trim():'';
+  a.forEach(function(x){if(x.id===id)x.res={v:v,what:what,on:iso(today())}});
+  DB.set(KEYS.dec,a);resolving=null;renderDec();paintCounts();
+  toast(v==='right'?'Noted — you called it':(v==='wrong'?'Noted — worth remembering':'Noted'));
+};
+window.reopenDec=function(id){
+  var a=DB.get(KEYS.dec,[]);a.forEach(function(x){if(x.id===id)x.res=null});
+  DB.set(KEYS.dec,a);renderDec();paintCounts();
+};
+window.delDec=function(id){del(KEYS.dec,id,renderDec)};
+var RESV={right:['Happened','a'],mixed:['Partly','w'],wrong:["Didn't happen",'b']};
+function score(v){return v==='right'?1:(v==='mixed'?0.5:0)}
+
+function renderDec(){
+  var a=DB.get(KEYS.dec,[]);
+  var open=a.filter(function(x){return !x.res});
+  var done=a.filter(function(x){return x.res});
+  var due=open.filter(function(x){return x.d&&daysTo(x.d)<=0}).length;
+  var acc=done.length?done.reduce(function(s,x){return s+score(x.res.v)},0)/done.length*100:null;
+  var conf=done.length?done.reduce(function(s,x){return s+x.c},0)/done.length:null;
+  var gap=(acc!==null&&conf!==null)?Math.round(conf-acc):null;
+  tiles('decTiles',[
+    [open.length,'open'],
+    [due,'to review',due?'warn':''],
+    [done.length,'resolved'],
+    [acc===null?'—':Math.round(acc)+'%','came true',acc===null?'':(acc<50?'acc':'')],
+    [gap===null?'—':(gap>0?'+'+gap:String(gap)),'over-sure by',gap===null?'':(gap>10?'warn':'acc')]
+  ]);
+  $('decOpenN').textContent=open.length?'':'';
+
+  /* calibration */
+  if(done.length<3){
+    $('decCal').innerHTML='<div class="empty" style="border:0;padding:16px 0">'+
+      'Resolve at least three predictions and a calibration chart appears here —<br>'+
+      'grey is how sure you were, green is how often you were right.</div>';
+  }else{
+    var B=[[50,59],[60,69],[70,79],[80,89],[90,99]],rows=[];
+    B.forEach(function(b){
+      var g=done.filter(function(x){return x.c>=b[0]&&x.c<=b[1]});
+      if(!g.length){rows.push([b,null,null,0]);return}
+      var pr=g.reduce(function(s,x){return s+x.c},0)/g.length;
+      var ac=g.reduce(function(s,x){return s+score(x.res.v)},0)/g.length*100;
+      rows.push([b,pr,ac,g.length]);
+    });
+    $('decCal').innerHTML='<div class="cal">'+rows.map(function(r){
+      var p=r[1],ac=r[2];
+      return '<div class="calb"><div class="pair">'+
+        (p===null?'<i class="p" style="height:2%"></i><i class="a" style="height:2%"></i>'
+                 :'<i class="p" style="height:'+p+'%" title="said '+Math.round(p)+'% sure"></i>'+
+                  '<i class="a" style="height:'+Math.max(1,ac)+'%" title="right '+Math.round(ac)+'% of the time"></i>')+
+        '</div><b>'+r[0][0]+'s'+(r[3]?' ('+r[3]+')':'')+'</b></div>';
+    }).join('')+'</div>'+
+    '<div class="legend"><span><i style="background:var(--border2)"></i>how sure you were</span>'+
+    '<span><i style="background:var(--acc)"></i>how often it happened</span></div>'+
+    '<div class="tiny" style="margin-top:9px">Green shorter than grey means the thing you were braced for kept not happening.</div>';
+  }
+
+  open.sort(function(x,y){var a1=x.d?daysTo(x.d):9999,b1=y.d?daysTo(y.d):9999;return a1-b1});
+  $('decOpen').innerHTML=(open.length?'':empty('Nothing open.\nNext time you catch yourself sure something will go badly, log it here.'))+
+    open.map(function(x){
+      var n=x.d?daysTo(x.d):null,cls=(n!==null&&n<=0)?'due':'';
+      var body='<div class="row '+cls+'"><div class="main"><div class="t">'+esc(x.t)+'</div>'+
+        (x.p?'<div class="m" style="color:var(--t3)">“'+esc(x.p)+'”</div>':'')+
+        '<div class="m"><span class="pill">'+x.c+'% sure</span>'+
+        (x.d?'<span>review '+nice(x.d)+' · '+rel(n)+'</span>':'<span>no review date</span>')+'</div>';
+      if(resolving===x.id){
+        body+='<div style="margin-top:11px"><label>What actually happened</label>'+
+          '<textarea id="rw-'+x.id+'" placeholder="In one line."></textarea>'+
+          '<div class="btnrow">'+
+          '<button class="btn" onclick="resolveDec(\''+x.id+'\',\'right\')">It happened</button>'+
+          '<button class="btn" onclick="resolveDec(\''+x.id+'\',\'mixed\')">Partly</button>'+
+          '<button class="btn pri" onclick="resolveDec(\''+x.id+'\',\'wrong\')">It didn\'t</button>'+
+          '</div></div>';
+      }
+      return body+'</div><div class="acts">'+
+        '<button class="ico g" onclick="openResolve(\''+x.id+'\')" title="Resolve">'+(resolving===x.id?'▴':'▾')+'</button>'+
+        '<button class="ico r" onclick="delDec(\''+x.id+'\')">×</button></div></div>';
+    }).join('');
+
+  done.sort(function(x,y){return x.res.on<y.res.on?1:-1});
+  $('decDone').innerHTML=(done.length?'':empty('Nothing resolved yet.'))+
+    done.map(function(x){
+      var m=RESV[x.res.v];
+      return '<div class="row"><div class="main"><div class="t">'+esc(x.t)+'</div>'+
+        (x.p?'<div class="m" style="color:var(--t4)">predicted: '+esc(x.p)+'</div>':'')+
+        (x.res.what?'<div class="m" style="color:var(--t2)">actually: '+esc(x.res.what)+'</div>':'')+
+        '<div class="m"><span class="pill '+m[1]+'">'+m[0]+'</span><span>'+x.c+'% sure</span>'+
+        '<span>'+nice(x.res.on)+'</span></div></div>'+
+        '<div class="acts"><button class="ico" onclick="reopenDec(\''+x.id+'\')" title="Reopen">↺</button>'+
+        '<button class="ico r" onclick="delDec(\''+x.id+'\')">×</button></div></div>';
+    }).join('');
+}
+
+/* ══════════ STORIES ══════════ */
+var COMP=[
+  ['lead','Leadership',"Tell me about a time you led a team."],
+  ['conflict','Conflict',"Tell me about a disagreement with a colleague."],
+  ['fail','Failure',"Tell me about a time you failed."],
+  ['influence','Influence',"Tell me about persuading someone with no authority over them."],
+  ['ambig','Ambiguity',"Tell me about a time the problem wasn't defined."],
+  ['analysis','Analysis',"Walk me through the hardest analysis you've done."],
+  ['team','Teamwork',"Tell me about a time you were not the star of the team."],
+  ['init','Initiative',"Tell me about something you started that nobody asked for."],
+  ['data','Persuading with data',"Tell me about changing someone's mind with evidence."],
+  ['weak','Weakness',"What's your biggest weakness?"]
+];
+function compName(k){for(var i=0;i<COMP.length;i++)if(COMP[i][0]===k)return COMP[i][1];return k}
+function compPrompt(k){for(var i=0;i<COMP.length;i++)if(COMP[i][0]===k)return COMP[i][2];return 'Tell me about a time.'}
+var stTags=[],stEdit=null,stFilter=null,pract=null,practT=null;
+
+window.tagTog=function(k){
+  var i=stTags.indexOf(k);
+  if(i<0)stTags.push(k);else stTags.splice(i,1);
+  paintTags();
+};
+function paintTags(){
+  $('sTags').innerHTML=COMP.map(function(c){
+    return '<button type="button" class="chip'+(stTags.indexOf(c[0])>=0?' on':'')+
+      '" onclick="tagTog(\''+c[0]+'\')">'+c[1]+'</button>';
+  }).join('');
+}
+window.filtComp=function(k){stFilter=(stFilter===k?null:k);renderStory()};
+window.saveStory=function(){
+  var t=$('sTitle').value.trim();
+  if(!t){toast('Needs a title');return}
+  var a=DB.get(KEYS.story,[]);
+  var o={t:t,tags:stTags.slice(),s:$('sS').value.trim(),ta:$('sT').value.trim(),
+         a:$('sA').value.trim(),r:$('sR').value.trim()};
+  if(stEdit){a.forEach(function(x){if(x.id===stEdit){for(var k in o)x[k]=o[k]}})}
+  else{o.id=uid();a.push(o)}
+  DB.set(KEYS.story,a);cancelStory();renderStory();paintCounts();toast(stEdit?'Updated':'Saved');
+};
+window.editStory=function(id){
+  var x=DB.get(KEYS.story,[]).filter(function(y){return y.id===id})[0];if(!x)return;
+  stEdit=id;stTags=(x.tags||[]).slice();
+  $('sTitle').value=x.t;$('sS').value=x.s||'';$('sT').value=x.ta||'';
+  $('sA').value=x.a||'';$('sR').value=x.r||'';
+  $('sSave').textContent='Update story';$('sCancel').style.display='';
+  $('stFormSec').firstChild.textContent='Editing';
+  paintTags();$('stFormSec').scrollIntoView({behavior:'smooth',block:'start'});
+};
+window.cancelStory=function(){
+  stEdit=null;stTags=[];
+  ['sTitle','sS','sT','sA','sR'].forEach(function(i){$(i).value=''});
+  $('sSave').textContent='Save story';$('sCancel').style.display='none';
+  $('stFormSec').firstChild.textContent='Add a story';
+  paintTags();
+};
+window.delStory=function(id){if(stEdit===id)cancelStory();del(KEYS.story,id,renderStory)};
+
+window.practice=function(){
+  var a=DB.get(KEYS.story,[]);
+  if(!a.length){toast('Write one story first');return}
+  var pool=[];
+  a.forEach(function(x){(x.tags&&x.tags.length?x.tags:['lead']).forEach(function(t){pool.push([t,x])})});
+  var pick=pool[Math.floor(Math.random()*pool.length)];
+  pract={comp:pick[0],story:pick[1],left:120,shown:false};
+  tickPract();
+  if(practT)clearInterval(practT);
+  practT=setInterval(function(){
+    if(!pract){clearInterval(practT);practT=null;return}
+    pract.left--;
+    if(pract.left<=0){pract.left=0;clearInterval(practT);practT=null}
+    tickPract();
+  },1000);
+};
+window.revealPract=function(){if(pract){pract.shown=true;tickPract()}};
+window.endPract=function(){pract=null;if(practT){clearInterval(practT);practT=null}renderStory()};
+function tickPract(){
+  if(!pract)return;
+  var m=Math.floor(pract.left/60),s=pract.left%60;
+  var cls=pract.left===0?'out':(pract.left<=30?'low':'');
+  var st=pract.story;
+  $('stPractice').innerHTML=
+    '<div class="prompt">'+esc(compPrompt(pract.comp))+'</div>'+
+    '<div class="tiny" style="margin-bottom:14px">Answer out loud. Two minutes is the real limit.</div>'+
+    '<div class="timer '+cls+'">'+m+':'+String(s).padStart(2,'0')+'</div>'+
+    '<div class="btnrow">'+
+      (pract.shown?'':'<button class="btn pri" onclick="revealPract()">Show my story</button>')+
+      '<button class="btn" onclick="practice()">Another</button>'+
+      '<button class="btn" onclick="endPract()">Done</button>'+
+    '</div>'+
+    (pract.shown?'<div style="margin-top:16px"><div class="t" style="font-size:15px;margin-bottom:8px">'+esc(st.t)+'</div>'+starHTML(st)+'</div>':'');
+}
+function starHTML(x){
+  var parts=[['Situation',x.s],['Task',x.ta],['Action',x.a],['Result',x.r]].filter(function(p){return p[1]});
+  if(!parts.length)return '<div class="tiny">No detail written yet.</div>';
+  return '<div class="star">'+parts.map(function(p){
+    return '<b>'+p[0]+'</b><p>'+esc(p[1])+'</p>';
+  }).join('')+'</div>';
+}
+
+function renderStory(){
+  var a=DB.get(KEYS.story,[]);
+  var counts={},filled=0;
+  a.forEach(function(x){
+    (x.tags||[]).forEach(function(t){counts[t]=(counts[t]||0)+1});
+    if(x.s&&x.ta&&x.a&&x.r)filled++;
+  });
+  var covered=COMP.filter(function(c){return counts[c[0]]}).length;
+  tiles('stTiles',[
+    [a.length,'stories'],
+    [covered+'/'+COMP.length,'covered',covered===COMP.length?'acc':'warn'],
+    [COMP.length-covered,'gaps',covered===COMP.length?'acc':'warn'],
+    [filled,'fully written',filled===a.length&&a.length?'acc':'']
+  ]);
+  $('stCover').innerHTML=COMP.map(function(c){
+    var n=counts[c[0]]||0;
+    return '<button type="button" class="chip '+(n?'has':'gap')+(stFilter===c[0]?' on':'')+
+      '" onclick="filtComp(\''+c[0]+'\')">'+c[1]+'<span class="c">'+n+'</span></button>';
+  }).join('');
+  if(!pract){
+    $('stPractice').innerHTML=a.length
+      ? '<div class="tiny" style="margin-bottom:12px">A random competency, a two-minute clock, and your story hidden until you ask for it.</div>'+
+        '<button class="btn pri" onclick="practice()">Start a drill</button>'
+      : '<div class="tiny">Write a story and the drill unlocks.</div>';
+  }
+  var list=stFilter?a.filter(function(x){return (x.tags||[]).indexOf(stFilter)>=0}):a;
+  $('stList').innerHTML=(a.length?'':empty('No stories yet.\nStart with the project you are proudest of.'))+
+    (a.length&&!list.length?empty('No story tagged '+compName(stFilter)+' yet.'):'')+
+    list.map(function(x){
+      var miss=[['S',x.s],['T',x.ta],['A',x.a],['R',x.r]].filter(function(p){return !p[1]}).map(function(p){return p[0]});
+      return '<div class="row"><div class="main"><div class="t">'+esc(x.t)+'</div><div class="m">'+
+        (x.tags||[]).map(function(t){return '<span class="pill b">'+esc(compName(t))+'</span>'}).join('')+
+        (miss.length?'<span style="color:var(--warn)">missing '+miss.join(' · ')+'</span>':'<span class="pill a">complete</span>')+
+        '</div>'+starHTML(x)+'</div>'+
+        '<div class="acts"><button class="ico" onclick="editStory(\''+x.id+'\')" title="Edit">✎</button>'+
+        '<button class="ico r" onclick="delStory(\''+x.id+'\')">×</button></div></div>';
+    }).join('');
+}
+
+/* ══════════ MONEY ══════════ */
+var CATS=['Rent','Food','Transport','Social','School','Health','Other'];
+function mkey(isoS){return isoS.slice(0,7)}
+function monthLabel(k){
+  var p=k.split('-');
+  return new Date(+p[0],+p[1]-1,1).toLocaleDateString('en-US',{month:'short'});
+}
+window.saveMoney=function(){
+  DB.set(KEYS.mcfg,{cash:parseFloat($('mCash').value)||0,bud:parseFloat($('mBud').value)||0,
+                    inc:parseFloat($('mIn').value)||0});
+  renderMoney();toast('Saved');
+};
+window.addExp=function(){
+  var amt=parseFloat($('eAmt').value);
+  if(!amt||amt<=0){toast('Needs an amount');return}
+  var a=DB.get(KEYS.exp,[]);
+  a.push({id:uid(),d:$('eDate').value||iso(today()),amt:amt,cat:$('eCat').value,n:$('eNote').value.trim()});
+  DB.set(KEYS.exp,a);
+  $('eAmt').value='';$('eNote').value='';
+  renderMoney();paintCounts();toast('Logged');
+};
+window.delExp=function(id){del(KEYS.exp,id,renderMoney)};
+function money(n){
+  return (n<0?'-':'')+'$'+Math.abs(Math.round(n)).toLocaleString('en-US');
+}
+
+function renderMoney(){
+  var cfg=DB.get(KEYS.mcfg,{cash:0,bud:0,inc:0});
+  var a=DB.get(KEYS.exp,[]).slice().sort(function(x,y){return x.d<y.d?1:-1});
+  if($('mCash')!==document.activeElement){
+    $('mCash').value=cfg.cash||'';$('mBud').value=cfg.bud||'';$('mIn').value=cfg.inc||'';
+  }
+  var now=mkey(iso(today()));
+  var thisM=a.filter(function(e){return mkey(e.d)===now});
+  var spent=thisM.reduce(function(s,e){return s+e.amt},0);
+
+  /* last 6 months */
+  var months=[],d=new Date();d.setDate(1);
+  for(var i=5;i>=0;i--){var x=new Date(d);x.setMonth(x.getMonth()-i);months.push(iso(x).slice(0,7))}
+  var totals=months.map(function(k){
+    return a.filter(function(e){return mkey(e.d)===k}).reduce(function(s,e){return s+e.amt},0);
+  });
+  var past=totals.slice(0,5).filter(function(t){return t>0});
+  var avg=past.length?past.reduce(function(s,t){return s+t},0)/past.length:(cfg.bud||spent);
+  var burn=Math.max(0,avg-(cfg.inc||0));
+  var months_left=burn>0?(cfg.cash/burn):Infinity;
+
+  tiles('mnTiles',[
+    [money(cfg.cash||0),'cash'],
+    [money(spent),'this month',cfg.bud&&spent>cfg.bud?'bad':''],
+    [money(avg),'avg / mo'],
+    [burn<=0?'∞':(months_left>99?'99+':months_left.toFixed(1)),'months runway',
+      burn<=0?'acc':(months_left<6?'bad':(months_left<12?'warn':'acc'))]
+  ]);
+
+  var rw='';
+  if(cfg.cash>0){
+    rw=burn<=0
+      ? '<div class="note" style="margin-bottom:0">Money in covers what goes out. On these numbers the cash doesn\'t run down at all.</div>'
+      : '<div class="note" style="margin-bottom:0">At <b>'+money(burn)+'</b> a month net, <b>'+money(cfg.cash)+
+        '</b> lasts about <b>'+(months_left>99?'99+':months_left.toFixed(1))+' months</b>'+
+        (months_left>=24?' — past the end of a two-year programme.':'.')+'</div>';
+  }
+  $('mnRunway').innerHTML=rw;
+
+  var pct=cfg.bud?Math.min(100,spent/cfg.bud*100):0;
+  var bcls=cfg.bud&&spent>cfg.bud?'over':(pct>80?'warn':'');
+  $('mnBar').innerHTML=cfg.bud
+    ? '<div class="split"><span>'+money(spent)+' spent</span><span>'+money(cfg.bud)+' budget</span></div>'+
+      '<div class="bar"><i class="'+bcls+'" style="width:'+pct+'%"></i></div>'+
+      '<div class="split"><span class="tiny">'+thisM.length+' expenses logged</span><span class="tiny">'+
+      (spent>cfg.bud?money(spent-cfg.bud)+' over':money(cfg.bud-spent)+' left')+'</span></div>'
+    : '<div class="tiny">Set a monthly budget above and this becomes a progress bar.</div>';
+
+  var byCat={};thisM.forEach(function(e){byCat[e.cat]=(byCat[e.cat]||0)+e.amt});
+  var cats=Object.keys(byCat).sort(function(x,y){return byCat[y]-byCat[x]});
+  $('mnCats').innerHTML=cats.length
+    ? cats.map(function(c){return '<span class="chip has" style="cursor:default">'+esc(c)+
+        '<span class="c">'+money(byCat[c])+'</span></span>'}).join('')
+    : '<span class="tiny">Nothing logged this month.</span>';
+
+  var mx=Math.max.apply(null,totals.concat([cfg.bud||0,1]));
+  $('mnBars').innerHTML=totals.map(function(t,i){
+    return '<i style="height:'+Math.max(2,t/mx*100)+'%'+
+      (cfg.bud&&t>cfg.bud?';background:linear-gradient(180deg,var(--bad),rgba(239,128,128,.2))':'')+
+      '" title="'+money(t)+'"></i>';
+  }).join('');
+  $('mnBarL').innerHTML=months.map(function(k){return '<span>'+monthLabel(k)+'</span>'}).join('');
+
+  $('mnList').innerHTML=(a.length?'':empty('No expenses logged.'))+
+    a.slice(0,20).map(function(e){
+      return '<div class="row"><div class="main"><div class="t">'+money(e.amt)+
+        ' <span style="color:var(--t4);font-weight:300">· '+esc(e.cat)+'</span></div>'+
+        '<div class="m"><span>'+nice(e.d)+'</span>'+(e.n?'<span>'+esc(e.n)+'</span>':'')+'</div></div>'+
+        '<div class="acts"><button class="ico r" onclick="delExp(\''+e.id+'\')">×</button></div></div>';
+    }).join('');
+}
+
+/* ══════════ WEEK ══════════ */
+function thisWeekKey(){return iso(weekStart(today()))}
+window.saveWeek=function(){
+  var k=thisWeekKey(),a=DB.get(KEYS.week,[]),found=false;
+  var o={a:$('wA').value.trim(),b:$('wB').value.trim(),c:$('wC').value.trim()};
+  if(!o.a&&!o.b&&!o.c){toast('Write something first');return}
+  a.forEach(function(x){if(x.id===k){x.a=o.a;x.b=o.b;x.c=o.c;found=true}});
+  if(!found)a.push({id:k,a:o.a,b:o.b,c:o.c});
+  DB.set(KEYS.week,a);renderWeek();toast('Saved');
+};
+window.delWeek=function(id){del(KEYS.week,id,renderWeek)};
+
+function renderWeek(){
+  var ws=weekStart(today()),we=new Date(ws);we.setDate(we.getDate()+7);
+  function inWk(isoS){if(!isoS)return false;var d=parseD(isoS);return d>=ws&&d<we}
+  var dlDone=DB.get(KEYS.dl,[]).filter(function(x){return x.done}).length;
+  var runs=DB.get(KEYS.run,[]).filter(function(r){return inWk(r.d)});
+  var miles=runs.reduce(function(s,r){return s+r.mi},0);
+  var touched=DB.get(KEYS.ppl,[]).filter(function(p){return inWk(p.last)}).length;
+  var spent=DB.get(KEYS.exp,[]).filter(function(e){return inWk(e.d)}).reduce(function(s,e){return s+e.amt},0);
+  var openDl=DB.get(KEYS.dl,[]).filter(function(x){return !x.done}).length;
+  var recAct=DB.get(KEYS.rec,[]).filter(function(x){return x.stage!=='closed'}).length;
+  var decOpen=DB.get(KEYS.dec,[]).filter(function(x){return !x.res}).length;
+
+  tiles('wkTiles',[
+    [runs.length,'runs'],
+    [miles.toFixed(1),'miles'],
+    [touched,'people'],
+    [money(spent),'spent'],
+    [DB.get(KEYS.week,[]).length,'weeks kept']
+  ]);
+
+  var lines=[
+    ['Deadlines still open',openDl,openDl?'':'acc'],
+    ['Companies still live',recAct,''],
+    ['Predictions waiting on reality',decOpen,''],
+    ['Deadlines ticked off, all time',dlDone,'acc']
+  ];
+  $('wkAuto').innerHTML='<div class="sec" style="margin-top:0">Week of '+nice(iso(ws))+'</div>'+
+    lines.map(function(l){
+      return '<div class="split" style="padding:7px 0;border-bottom:1px solid var(--border)">'+
+        '<span>'+l[0]+'</span><span style="color:var(--'+(l[2]==='acc'?'acc':'text')+')">'+l[1]+'</span></div>';
+    }).join('')+
+    '<div class="tiny" style="margin-top:12px">Counted from the other tabs. Nothing to fill in.</div>';
+
+  var a=DB.get(KEYS.week,[]).slice().sort(function(x,y){return x.id<y.id?1:-1});
+  var cur=a.filter(function(x){return x.id===thisWeekKey()})[0];
+  if(cur&&$('wA')!==document.activeElement&&$('wB')!==document.activeElement&&$('wC')!==document.activeElement){
+    $('wA').value=cur.a||'';$('wB').value=cur.b||'';$('wC').value=cur.c||'';
+  }
+  var past=a.filter(function(x){return x.id!==thisWeekKey()});
+  $('wkList').innerHTML=(past.length?'':empty('Nothing yet.\nThe value shows up around week four, when you can read them back.'))+
+    past.map(function(x){
+      return '<div class="row"><div class="main"><div class="t">Week of '+nice(x.id)+'</div>'+
+        (x.a?'<div class="star" style="margin:9px 0 0"><b>Worked</b><p>'+esc(x.a)+'</p></div>':'')+
+        (x.b?'<div class="star" style="margin:9px 0 0;border-color:var(--warn)"><b>Avoided</b><p>'+esc(x.b)+'</p></div>':'')+
+        (x.c?'<div class="star" style="margin:9px 0 0;border-color:var(--acc)"><b>Next</b><p>'+esc(x.c)+'</p></div>':'')+
+        '</div><div class="acts"><button class="ico r" onclick="delWeek(\''+x.id+'\')">×</button></div></div>';
+    }).join('');
+}
+
 /* ══════════ EXPORT / IMPORT ══════════ */
 window.exportAll=function(){
   var out={_v:1,_exported:new Date().toISOString()};
@@ -589,7 +1163,8 @@ window.importAll=function(input){
 };
 
 /* ══════════ SHELL ══════════ */
-var TABS=[['school','School'],['rec','Recruiting'],['run','Running'],['ppl','People']];
+var TABS=[['school','School'],['rec','Recruiting'],['story','Stories'],['dec','Decisions'],
+          ['run','Running'],['money','Runway'],['ppl','People'],['week','Week']];
 
 function counts(){
   var dl=DB.get(KEYS.dl,[]).filter(function(x){
@@ -599,7 +1174,17 @@ function counts(){
   var ws=weekStart(today());
   var run=DB.get(KEYS.run,[]).filter(function(r){return parseD(r.d)>=ws}).length;
   var ppl=DB.get(KEYS.ppl,[]).filter(function(p){return p.last&&-daysTo(p.last)>=p.c}).length;
-  return {school:dl,rec:rec,run:run,ppl:ppl};
+  var dec=DB.get(KEYS.dec,[]).filter(function(x){return !x.res&&x.d&&daysTo(x.d)<=0}).length;
+  var st=DB.get(KEYS.story,[]),tagged={};
+  st.forEach(function(x){(x.tags||[]).forEach(function(t){tagged[t]=1})});
+  var story=st.length?COMP.filter(function(c){return !tagged[c[0]]}).length:0;
+  var cfg=DB.get(KEYS.mcfg,{bud:0});
+  var now=mkey(iso(today()));
+  var spent=DB.get(KEYS.exp,[]).filter(function(e){return mkey(e.d)===now})
+              .reduce(function(s,e){return s+e.amt},0);
+  var money=(cfg.bud&&spent>cfg.bud)?1:0;
+  var week=DB.get(KEYS.week,[]).some(function(x){return x.id===iso(ws)})?0:1;
+  return {school:dl,rec:rec,run:run,ppl:ppl,dec:dec,story:story,money:money,week:week};
 }
 function paintCounts(){
   var c=counts();
@@ -616,7 +1201,8 @@ window.go=function(id){
   if(location.hash.slice(1)!==id)location.hash=id;
   window.scrollTo(0,0);
 };
-function renderAll(){renderSchool();renderRec();renderRun();renderPpl();paintCounts()}
+function renderAll(){renderSchool();renderRec();renderRun();renderPpl();
+  renderDec();renderStory();renderMoney();renderWeek();paintCounts()}
 
 function init(){
   $('tabs').innerHTML=TABS.map(function(t){
@@ -626,7 +1212,10 @@ function init(){
   $('rcStage').innerHTML=STAGES.map(function(s){return '<option value="'+s[0]+'">'+s[1]+'</option>'}).join('');
   $('recFilter').innerHTML='<option value="all">all</option>'+
     STAGES.map(function(s){return '<option value="'+s[0]+'">'+s[1].toLowerCase()+'</option>'}).join('');
+  $('eCat').innerHTML=CATS.map(function(c){return '<option value="'+c+'">'+c+'</option>'}).join('');
   $('rnDate').value=iso(today());
+  $('eDate').value=iso(today());
+  paintTags();
   renderAll();
   go(location.hash.slice(1)||'school');
   window.addEventListener('hashchange',function(){go(location.hash.slice(1))});
