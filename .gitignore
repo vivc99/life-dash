@@ -7,3 +7,4 @@ harness*.html
 # Private financial model — never commit
 model.html
 model*.html
+nyc budgeting*.xlsx

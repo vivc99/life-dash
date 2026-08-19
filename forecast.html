@@ -1,0 +1,1601 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forecast</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#08090b;--p1:#101216;--p2:#15181d;--p3:#1b1f26;
+  --bd:#22262e;--bd2:#2d323c;
+  --t1:#eef1f5;--t2:#c2c8d2;--t3:#8f97a5;--t4:#646c7a;--t5:#454c58;
+  --ok:#5fd4a4;--ok2:#3fae84;--warn:#e8b16a;--bad:#ef7f7f;--info:#7fa9ef;--vio:#b294e8;
+  --serif:'Fraunces',Georgia,serif;--sans:'Inter',-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;--r:13px;
+}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);font-weight:300;line-height:1.6;
+  -webkit-font-smoothing:antialiased;font-size:15px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.wrap{max-width:1240px;margin:0 auto;padding:0 22px 110px}
+
+header{padding:28px 0 10px;display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.brand{font-family:var(--serif);font-size:26px;font-weight:300;letter-spacing:-.01em}
+.brand small{display:block;font-family:var(--sans);font-size:12.5px;color:var(--t4);letter-spacing:0;margin-top:2px}
+.chip{font-size:10px;letter-spacing:.11em;text-transform:uppercase;padding:4px 11px;border-radius:20px;
+  border:1px solid var(--bd2);color:var(--t4)}
+.chip.pv{color:var(--warn);border-color:rgba(232,177,106,.28);background:rgba(232,177,106,.06)}
+
+nav{display:flex;gap:2px;border-bottom:1px solid var(--bd);margin:18px 0 24px;overflow-x:auto}
+.tb{background:none;border:0;border-bottom:2px solid transparent;color:var(--t4);font-family:var(--sans);
+  font-size:13.5px;font-weight:300;padding:11px 15px;cursor:pointer;white-space:nowrap;margin-bottom:-1px;
+  transition:color .18s,border-color .18s}
+.tb:hover{color:var(--t2)}
+.tb.on{color:var(--t1);border-bottom-color:var(--ok)}
+.tb b{display:inline-block;margin-left:7px;font-family:var(--mono);font-size:10.5px;font-weight:400;
+  color:var(--t5);background:var(--p2);border-radius:9px;padding:1px 6px}
+.v{display:none}.v.on{display:block;animation:fi .3s ease both}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+h2{font-family:var(--serif);font-size:27px;font-weight:300;letter-spacing:-.01em}
+.lede{font-size:13.5px;color:var(--t3);max-width:70ch;line-height:1.72;margin:5px 0 20px}
+.sec{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--t4);margin:30px 0 11px;
+  display:flex;align-items:center;gap:12px}
+.sec::after{content:'';flex:1;height:1px;background:var(--bd)}
+.card{background:var(--p1);border:1px solid var(--bd);border-radius:var(--r);padding:19px}
+.card+.card{margin-top:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:900px){.g2,.g3{grid-template-columns:1fr}}
+
+/* verdict */
+.verdict{background:linear-gradient(160deg,var(--p2),var(--p1));border:1px solid var(--bd2);
+  border-radius:16px;padding:26px;display:grid;grid-template-columns:auto 1fr;gap:30px;align-items:center}
+@media(max-width:760px){.verdict{grid-template-columns:1fr;gap:18px}}
+.dial{position:relative;width:172px;height:172px;flex-shrink:0}
+.dial svg{transform:rotate(-90deg)}
+.dial .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dial .pc{font-family:var(--serif);font-size:44px;line-height:1;font-weight:300}
+.dial .lb{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--t4);margin-top:6px}
+.vtext .big{font-family:var(--serif);font-size:25px;line-height:1.32;font-weight:300;letter-spacing:-.01em}
+.vtext .sub{font-size:13.5px;color:var(--t3);margin-top:11px;line-height:1.72;max-width:56ch}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:9px}
+.tile{background:var(--p1);border:1px solid var(--bd);border-radius:var(--r);padding:15px 15px 14px}
+.tile .v2{font-family:var(--serif);font-size:26px;line-height:1.1;font-weight:300}
+.tile .v2.ok{color:var(--ok)}.tile .v2.bad{color:var(--bad)}.tile .v2.warn{color:var(--warn)}
+.tile .v2.info{color:var(--info)}
+.tile .k{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t4);margin-top:7px}
+.tile .s{font-size:11.5px;color:var(--t5);margin-top:4px;line-height:1.5}
+.tile .v2 em{font-style:normal;font-size:15px;color:var(--t4);font-family:var(--sans)}
+.tk{font-size:13.5px;color:var(--t2);line-height:1.75;display:grid;gap:13px}
+.tk p{display:grid;grid-template-columns:20px 1fr;gap:11px;align-items:start}
+.tk p::before{content:'';width:7px;height:7px;border-radius:2px;background:var(--ok);margin-top:8px}
+.tk p.w::before{background:var(--warn)}.tk p.b::before{background:var(--info)}
+.tk b{color:var(--t1);font-weight:500}
+
+.chartbox{position:relative}
+svg.ch{width:100%;height:auto;display:block}
+.tip{position:absolute;pointer-events:none;background:rgba(16,18,22,.98);border:1px solid var(--bd2);
+  border-radius:10px;padding:9px 12px;font-size:12px;min-width:180px;opacity:0;transition:opacity .1s;
+  box-shadow:0 12px 34px rgba(0,0,0,.65);z-index:9}
+.tip.on{opacity:1}
+.tip .y{font-family:var(--serif);font-size:18px;line-height:1.2}
+.tip .r{display:flex;justify-content:space-between;gap:14px;margin-top:4px;color:var(--t3)}
+.tip .r b{font-family:var(--mono);font-weight:400;color:var(--t2)}
+.tip .e{color:var(--warn);font-size:11px;margin-top:5px}
+.leg{display:flex;gap:15px;font-size:11.5px;color:var(--t4);flex-wrap:wrap;margin-top:11px}
+.leg i{display:inline-block;width:14px;height:2px;margin-right:6px;vertical-align:middle}
+.leg i.sq{height:9px;border-radius:2px}
+
+/* tornado */
+.tor .row{display:grid;grid-template-columns:196px 1fr 148px;gap:12px;align-items:center;padding:5px 0}
+.torhead{display:grid;grid-template-columns:196px 1fr 148px;gap:12px;font-size:9.5px;color:var(--t5);
+  text-transform:uppercase;letter-spacing:.11em;padding-bottom:7px;border-bottom:1px solid var(--bd);margin-bottom:6px}
+.torhead b{font-weight:400;color:var(--t4)}
+.tor .nm{font-size:12.5px;color:var(--t2)}
+.tor .nm small{display:block;font-size:10.5px;color:var(--t5)}
+.tor .bar{position:relative;height:20px;background:var(--p2);border-radius:4px}
+.tor .bar i{position:absolute;top:3px;height:14px;border-radius:3px;transition:all .35s}
+.tor .bar i.lo{background:var(--bad);opacity:.8}
+.tor .bar i.hi{background:var(--ok);opacity:.85}
+.tor .amt{text-align:right;font-family:var(--mono);font-size:10.5px;line-height:1.55}
+.tor .amt span{display:block;white-space:nowrap}
+.tor .amt .w{color:var(--bad)}.tor .amt .b{color:var(--ok)}
+@media(max-width:700px){.tor .row,.torhead{grid-template-columns:1fr 128px}.tor .bar,.torhead b{display:none}}
+
+/* inputs */
+.lv{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px}
+.f label{display:flex;justify-content:space-between;align-items:baseline;font-size:10.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--t4);margin-bottom:5px;gap:8px}
+.f label b{font-family:var(--mono);font-size:12.5px;color:var(--ok);font-weight:400;letter-spacing:0;
+  text-transform:none;white-space:nowrap}
+.f .hint{font-size:11px;color:var(--t5);margin-top:4px;line-height:1.5}
+input[type=number],input[type=text],select{width:100%;background:var(--bg);border:1px solid var(--bd2);
+  border-radius:8px;color:var(--t1);font-family:var(--mono);font-size:12.5px;padding:7px 10px}
+input:focus,select:focus{outline:none;border-color:var(--ok)}
+input.unk{border-color:rgba(232,177,106,.45);background:rgba(232,177,106,.05)}
+.rng{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:3px;padding:0;border:0;
+  background:linear-gradient(90deg,var(--bd2),var(--ok));cursor:pointer;margin:5px 0 1px}
+.rng::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+  background:var(--ok);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--ok)}
+.rngl{display:flex;justify-content:space-between;font-size:9.5px;color:var(--t5)}
+.btn{background:var(--p2);border:1px solid var(--bd2);color:var(--t2);border-radius:8px;
+  font-family:var(--sans);font-size:12.5px;font-weight:300;padding:8px 14px;cursor:pointer;transition:all .16s}
+.btn:hover{border-color:var(--t4);color:var(--t1)}
+.btn.pri{background:var(--ok);border-color:var(--ok);color:#062018;font-weight:500}
+.btn.sm{padding:4px 10px;font-size:11.5px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px;align-items:center}
+
+/* the three epistemic bands */
+.band{border-radius:var(--r);border:1px solid var(--bd);overflow:hidden;margin-bottom:11px}
+.band>.hd{padding:13px 18px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.band>.hd .t{font-family:var(--serif);font-size:19px;font-weight:300}
+.band>.hd .d{font-size:12px;color:var(--t4);flex:1;min-width:200px}
+.band>.bd{padding:17px 18px 19px;background:var(--p1);border-top:1px solid var(--bd)}
+.band.fact>.hd{background:rgba(127,169,239,.07)}.band.fact>.hd .t{color:var(--info)}
+.band.assum>.hd{background:rgba(178,148,232,.07)}.band.assum>.hd .t{color:var(--vio)}
+.band.dec>.hd{background:rgba(95,212,164,.07)}.band.dec>.hd .t{color:var(--ok)}
+
+.note{font-size:12.5px;color:var(--t3);line-height:1.72;background:var(--p2);border:1px solid var(--bd);
+  border-left:2px solid var(--ok);border-radius:9px;padding:13px 15px;margin:12px 0}
+.note.w{border-left-color:var(--warn)}
+.note.b{border-left-color:var(--info)}
+.note b{color:var(--t1);font-weight:500}
+.warnbar{background:rgba(232,177,106,.1);border:1px solid rgba(232,177,106,.3);color:var(--warn);
+  border-radius:10px;padding:11px 15px;font-size:12.5px;margin-bottom:14px;line-height:1.6}
+
+/* timeline */
+.tl{display:flex;gap:6px;overflow-x:auto;padding:3px 0 9px}
+.tlc{flex:0 0 auto;background:var(--p2);border:1px solid var(--bd2);border-radius:10px;
+  padding:9px 12px;min-width:118px;transition:all .16s}
+.tlc.k{border-color:rgba(232,177,106,.3)}
+.tlc .yr{font-family:var(--mono);font-size:11.5px;color:var(--t3)}
+.tlc .lb{font-size:12.5px;color:var(--t1);margin-top:2px;line-height:1.3}
+.tlc .am{font-family:var(--mono);font-size:11px;color:var(--warn);margin-top:3px}
+.tlc .ag{font-size:10px;color:var(--t5);margin-top:1px}
+
+table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.5px;font-weight:300}
+th{font-family:var(--sans);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--t4);
+  font-weight:500;text-align:right;padding:8px 7px;border-bottom:1px solid var(--bd2);
+  position:sticky;top:0;background:var(--p1);z-index:2}
+th:first-child,td:first-child{text-align:left}
+td{padding:5px 7px;border-bottom:1px solid var(--bd);text-align:right;color:var(--t2);white-space:nowrap}
+tr.hist td{color:var(--t5)}
+tr.ret td{background:rgba(127,169,239,.045)}
+tr:hover td{background:var(--p2)}
+td.neg{color:var(--bad)}td.nw{color:var(--t1);font-weight:400}
+.tw{overflow:auto;max-height:560px;border:1px solid var(--bd);border-radius:var(--r);background:var(--p1)}
+.sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px;vertical-align:baseline}
+
+/* stress scenarios */
+.stbl{width:100%;border-collapse:collapse;font-size:13px}
+.stbl th{font-family:var(--sans);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--t4);font-weight:500;text-align:left;padding:8px 10px;border-bottom:1px solid var(--bd2)}
+.stbl td{padding:9px 10px;border-bottom:1px solid var(--bd);color:var(--t2);white-space:normal}
+.stbl td:nth-child(3),.stbl td:nth-child(4),.stbl td:nth-child(5){text-align:right;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.stbl th:nth-child(3),.stbl th:nth-child(4),.stbl th:nth-child(5){text-align:right}
+.stbl .desc{font-size:12px;color:var(--t3)}
+@media(max-width:700px){.stbl td:nth-child(4),.stbl th:nth-child(4){display:none}}
+/* limit bars */
+.limbar{height:8px;border-radius:4px;background:var(--p2);position:relative;min-width:80px}
+.limfill{height:100%;border-radius:4px;position:absolute;left:0;top:0}
+.limmark{position:absolute;top:-2px;width:2px;height:12px;border-radius:1px;background:var(--t1)}
+
+.stbl .pbar{width:100%;height:6px;background:var(--p2);border-radius:3px;overflow:hidden;margin-top:4px}
+.stbl .pfill{height:100%;border-radius:3px;transition:width .3s}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand">Forecast<small>Real dollars. Ranges, not points. Built to tell you what matters.</small></div>
+  <div style="display:flex;gap:7px;flex-wrap:wrap">
+    <span class="chip pv">◆ local file · never published</span>
+    <span class="chip" id="unitChip" style="cursor:pointer" title="Toggle display units">today's money</span>
+  </div>
+</header>
+<nav>
+  <button class="tb on" id="t-verdict" onclick="go('verdict')">Verdict</button>
+  <button class="tb" id="t-life" onclick="go('life')">Your life</button>
+</nav>
+
+<section class="v on" id="v-verdict">
+  <div id="unkBar"></div>
+  <div class="tiles" id="vTiles"></div>
+  <div class="sec">Net worth</div>
+  <div class="card">
+    <svg class="ch" id="stack" viewBox="0 0 1000 380" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="leg" id="stackLeg"></div>
+  </div>
+  <div class="sec">Accounts</div>
+  <div class="card">
+    <svg class="ch" id="draw" viewBox="0 0 1000 220" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div class="sec">Sensitivity</div>
+  <div class="card tor" id="tornado"></div>
+  <div class="sec">Stress tests</div>
+  <div class="card" id="stressTable"></div>
+</section>
+
+
+<section class="v" id="v-life">
+  <h2>Your life</h2>
+  <p class="lede">Every event is one record with a year, a cost in today's money, and its knock-on effects.
+    Move a date here and the whole forecast re-derives — there are no year-by-year rows to keep in sync.</p>
+  <div class="sec">Generated from your decisions</div>
+  <div class="tl" id="timeline"></div>
+  <div class="sec">Add your own</div>
+  <div class="card"><div id="customList"></div>
+    <div class="btnrow"><button class="btn" onclick="addEvent()">+ Add an event</button></div></div>
+  <div class="sec">Cost of each commitment, in today's money</div>
+  <div class="card"><div id="commit"></div></div>
+  <div class="sec">Every year</div>
+  <div class="btnrow" style="margin:0 0 13px" id="yearsCtl"></div>
+  <div class="tw"><table id="tbl"></table></div>
+</section>
+
+
+
+
+<div class="tip" id="chartTip"></div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   FORECAST — a life model built on eight rules:
+     1. real dollars are the unit; nominal is a display transform
+     2. one row per account, each with its own tax treatment
+     3. no chained recursion — every year is a direct formula from a base
+     4. life events are objects with effects, not hand-typed rows
+     5. no single number — distributions, always
+     6. the model volunteers what matters (tornado is automatic)
+     7. facts / assumptions / decisions are kept apart
+     8. it solves backwards
+   ══════════════════════════════════════════════════════════════════════ */
+
+var ACCOUNTS=[
+ {id:'taxable',nm:'Taxable brokerage',tax:'gains', c:'#5fd4a4'},
+ {id:'pretax', nm:'401(k) pre-tax',   tax:'ord',   c:'#7fa9ef'},
+ {id:'pretaxP',nm:"Partner's 401(k)",  tax:'ord',   c:'#4d7fd0'},
+ {id:'roth',   nm:'Roth',             tax:'free',  c:'#b294e8'},
+ {id:'hsa',    nm:'HSA',              tax:'free',  c:'#e8b16a'},
+ {id:'p529',   nm:'529',              tax:'edu',   c:'#d98fb0'},
+ {id:'rsu',    nm:'RSU + ESPP',       tax:'gains', c:'#6fc4d4'}
+];
+
+var DEFAULTS={
+  facts:{
+    birthYear:2000, baseYear:2026,
+    takeHome:79000, grossSalary:160100, etr:.28,
+    spending:66780, rent:34860,
+    contrib:33100, hsaAnnual:4300,
+    taxable:100000, pretax:170000, pretaxP:170000, roth:0, hsa:16000, p529:120424, rsu:250434
+  },
+  assum:{
+    inflation:.03, realReturn:.04, vol:.13, rsuExtraVol:.22, taxDrag:.005,
+    incomeRealG:0, spendRealG:.005, conRealG:0,
+    ordinaryTax:.22, capGainsTax:.15, earlyPenalty:.10,
+    retSpendStep:1.0, retSpendRealG:-.01,
+    ssReal:74400, rothConvMax:100000, rothConvTax:.12, houseRealApr:0, healthCost:5000, healthCostRetired:20000
+  },
+  dec:{
+    retireAge:60, endAge:95, ssAge:70,
+    mbaStart:2026, mbaF1:.75, mbaF2:.25, schSpend:25600, schFrac1:.4167, schFrac2:.4167,
+    tuition:50000, postMbaBump:0,
+    marryYear:2030, partnerRatio:1.0, partnerConRatio:1.0, hhSpendMult:1.5, engageCost:0, weddingCost:70000,
+    kid1:2032, kid2:2035, kidCost:18000, collegeCost:100000,
+    coastFrom:9999, p529Annual:10000,
+    housePrice:1000000, houseYear:2036, dpPct:.20, mortRate:.065, mortYears:30, ownCostPct:.0225,
+    pretaxFrac:.50, drawOrder:'taxable,rsu,pretax,pretaxP,hsa,roth'
+  },
+  custom:[],
+  unknown:{}
+};
+
+var S=load();
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function load(){
+  try{var v=JSON.parse(localStorage.getItem('fc_v3'));
+    if(v&&v.facts){var d=clone(DEFAULTS);
+      ['facts','assum','dec'].forEach(function(k){for(var i in v[k])if(k in d&&i in d[k])d[k][i]=v[k][i]});
+      d.custom=v.custom||[]; d.unknown=v.unknown||clone(DEFAULTS.unknown);
+      d.unknown={};
+      var have=d.dec.drawOrder.split(',');
+      ACCOUNTS.forEach(function(a){if(a.tax!=='edu'&&have.indexOf(a.id)<0)have.push(a.id)});
+      d.dec.drawOrder=have.join(',');
+      return d}
+  }catch(e){}
+  return clone(DEFAULTS);
+}
+function save(){try{localStorage.setItem('fc_v3',JSON.stringify(S))}catch(e){}}
+
+/* ── derived years ─────────────────────────────────────────────────── */
+function Y(){var F=S.facts,D=S.dec;return{
+  base:F.baseYear, birth:F.birthYear,
+  ret:F.birthYear+D.retireAge, end:F.birthYear+D.endAge, ss:F.birthYear+D.ssAge
+}}
+
+/* ── RULE 4: events are objects generated from decisions ───────────── */
+function buildEvents(){
+  var D=S.dec,y=Y(),e=[];
+  e.push({y:D.mbaStart,   lab:'School, year 1',cost:D.tuition, tag:'school',college:1});
+  e.push({y:D.mbaStart+1, lab:'School, year 2',cost:D.tuition, tag:'school',college:1});
+  e.push({y:D.mbaStart+2, lab:'Graduate',      cost:0,         tag:'school'});
+  if(D.engageCost||D.marryYear) e.push({y:D.marryYear-1,lab:'Engaged',cost:D.engageCost,tag:'couple'});
+  e.push({y:D.marryYear,  lab:'Married',       cost:D.weddingCost, tag:'couple'});
+  e.push({y:D.houseYear,  lab:'Buy a house',   cost:D.housePrice*D.dpPct, tag:'house'});
+  [D.kid1,D.kid2].forEach(function(by,i){
+    var n=i+1;
+    e.push({y:by,lab:'Kid '+n+' born',cost:0,tag:'kid'});
+    for(var k=0;k<18;k++) e.push({y:by+k,lab:'Kid '+n+' — raising',cost:D.kidCost,tag:'kid',quiet:1});
+    for(var k=0;k<4;k++)  e.push({y:by+18+k,lab:'Kid '+n+' — college '+(k+1),cost:D.collegeCost,tag:'college',college:1});
+  });
+  e.push({y:y.ret,lab:'Retire',cost:0,tag:'retire'});
+  e.push({y:y.ss, lab:'Social Security starts',cost:0,tag:'retire'});
+  (S.custom||[]).forEach(function(c){e.push({y:+c.y,lab:c.lab||'(untitled)',cost:+c.cost||0,tag:'custom'})});
+  return e;
+}
+
+/* ── mortgage: the one place nominal genuinely matters ─────────────── */
+function amort(){
+  var A=S.assum,D=S.dec,y=Y();
+  var priceNom=D.housePrice*Math.pow(1+A.inflation,D.houseYear-y.base);
+  var loan=priceNom*(1-D.dpPct), m=D.mortRate/12, n=Math.round(D.mortYears*12);
+  var pay=m>0? loan*m/(1-Math.pow(1+m,-n)) : loan/n;
+  var bal=[],b=loan;
+  for(var k=0;k<n;k++){b-=pay-b*m; bal.push(b>0?b:0)}
+  return {priceNom:priceNom,loan:loan,payYear:pay*12,bal:bal,n:n};
+}
+
+/* ── RULE 3: direct formulas, never "last year times something" ────── */
+function spendPath(yr){
+  var F=S.facts,A=S.assum,D=S.dec,y=Y();
+  var s=F.spending*Math.pow(1+A.spendRealG,yr-y.base);
+  if(yr>=D.marryYear) s*=D.hhSpendMult;
+  return s;
+}
+function spendReal(yr){
+  var D=S.dec,A=S.assum,y=Y();
+  if(yr>y.ret){
+    var lw=spendPath(y.ret);
+    return lw*A.retSpendStep*Math.pow(1+A.retSpendRealG,yr-y.ret-1);
+  }
+  var s=spendPath(yr);
+  if(yr===D.mbaStart)        return s*(1-D.schFrac1)+D.schSpend*D.schFrac1;
+  if(yr===D.mbaStart+1)      return D.schSpend;
+  if(yr===D.mbaStart+2)      return s*(1-D.schFrac2)+D.schSpend*D.schFrac2;
+  return s;
+}
+function incomeReal(yr){
+  var F=S.facts,A=S.assum,D=S.dec,y=Y();
+  if(yr>y.ret) return 0;
+  var v;
+  if(yr===D.mbaStart)        v=F.takeHome*D.mbaF1;
+  else if(yr===D.mbaStart+1) v=F.takeHome*D.mbaF2;
+  else{
+    v=F.takeHome*Math.pow(1+A.incomeRealG,yr-y.base);
+    if(yr>=D.mbaStart+2) v*=(1+D.postMbaBump);
+  }
+  if(yr>=D.marryYear) v*=(1+D.partnerRatio);
+  return v;
+}
+function contribReal(yr){
+  var F=S.facts,A=S.assum,D=S.dec,y=Y();
+  if(yr>y.ret||yr>=D.coastFrom) return 0;
+  var c=F.contrib*Math.pow(1+A.conRealG,yr-y.base);
+  if(yr===D.mbaStart)   c*=D.mbaF1;
+  if(yr===D.mbaStart+1) c*=D.mbaF2;
+  return c;
+}
+
+function partnerConReal(yr){
+  var F=S.facts,A=S.assum,D=S.dec,y=Y();
+  if(yr>y.ret||yr>=D.coastFrom||yr<D.marryYear) return 0;
+  return F.contrib*Math.pow(1+A.conRealG,yr-y.base)*D.partnerRatio*D.partnerConRatio;
+}
+
+/* ── the engine. everything real; returns one row per year ─────────── */
+function run(path,rsuPath){
+  var F=S.facts,A=S.assum,D=S.dec,y=Y(),am=amort();
+  var ev=buildEvents(), byYear={};
+  ev.forEach(function(e){(byYear[e.y]=byYear[e.y]||[]).push(e)});
+  var bal={};ACCOUNTS.forEach(function(a){bal[a.id]=F[a.id]||0});
+  var pOut=bal.pretaxP; bal.pretaxP=0;   /* joins the household at marriage, not today */
+  var order=D.drawOrder.split(',');
+  var rows=[],broke=0;
+  for(var yr=y.base;yr<=y.end;yr++){
+    var i=yr-y.base, age=yr-y.birth;
+    var r=path?path[i]:A.realReturn;
+    var rsuR=r+(rsuPath?rsuPath[i]:0);
+
+    if(yr>=D.marryYear&&pOut>0){bal.pretaxP+=pOut; pOut=0}
+
+    /* growth on opening balances, per account, per tax treatment */
+    var grow=0;
+    ACCOUNTS.forEach(function(a){
+      var rr=(a.id==='rsu')?rsuR:r;
+      if(a.tax==='gains') rr-=A.taxDrag;
+      var g=bal[a.id]*rr; bal[a.id]+=g; grow+=g;
+    });
+
+    if(pOut>0) pOut*=(1+r);          /* still theirs, still compounding */
+
+    var inc=incomeReal(yr);
+    var ss=(yr>y.ret&&age>=D.ssAge)?A.ssReal:0;
+    var spend=spendReal(yr);
+    var con=contribReal(yr), pcon=partnerConReal(yr);
+
+
+    /* housing: nominal payment deflated; everything else already real */
+    var hous=0,eq=0;
+    if(yr>=D.houseYear){
+      var k=yr-D.houseYear;
+      var pi=(k<D.mortYears)?am.payYear/Math.pow(1+A.inflation,yr-y.base):0;
+      var rent=F.rent*(yr>=D.marryYear?D.hhSpendMult:1)*
+        (yr>y.ret?A.retSpendStep*Math.pow(1+A.retSpendRealG,yr-y.ret-1):1);
+      hous=pi+D.housePrice*D.ownCostPct-rent;
+      var valNom=am.priceNom*Math.pow((1+A.inflation)*(1+A.houseRealApr),k);
+      var bIdx=k*12+11, rem=(bIdx<am.n)?am.bal[bIdx]:0;
+      eq=(valNom-rem)/Math.pow(1+A.inflation,yr-y.base);
+    }
+
+    var list=byYear[yr]||[], evCost=0, college=0;
+    list.forEach(function(e){evCost+=e.cost||0; if(e.college)college+=e.cost||0});
+    /* healthcare: pull from HSA first, remainder adds to costs */
+    var hlth=A.healthCost;
+    if(yr>y.ret&&age<65) hlth=A.healthCostRetired;
+    else if(age>=65) hlth=8000;
+    var fromHsa=Math.min(bal.hsa,hlth);
+    bal.hsa-=fromHsa;
+    var hlthGap=hlth-fromHsa;
+    var big=evCost+hous+hlthGap;
+
+    /* the 529 pays for college — structurally, so it cannot be double-counted */
+    var from529=0;
+    if(college>0){from529=Math.min(bal.p529,college); bal.p529-=from529}
+
+    /* contributions land in the accounts that actually receive them */
+    /* 401k + HSA are pre-tax deductions from gross — always happen, don't affect take-home */
+    var toHsa=Math.min(con,F.hsaAnnual), toRet=con-toHsa;
+    var toPre=toRet*D.pretaxFrac;
+    var pPre=pcon*D.pretaxFrac;
+    bal.pretax+=toPre; bal.hsa+=toHsa;
+    bal.pretaxP+=pPre;
+    /* 529 annual contribution — only while working and kids are under 18 */
+    var to529=0;
+    if(yr<=y.ret&&D.p529Annual>0){
+      var hasKid=(yr>=D.kid1&&yr<D.kid1+18)||(yr>=D.kid2&&yr<D.kid2+18);
+      if(hasKid){to529=D.p529Annual; bal.p529+=to529}
+    }
+
+    var wd={};
+    var net=inc+ss+from529-spend-big;
+    if(!isFinite(net)){throw new Error('non-finite cash flow in '+yr+' — a parameter is missing');}
+    var unmet=0;
+    net-=to529;
+    if(net>=0){ bal.taxable+=net }
+    else{
+      var short=-net;
+      /* pass 1: skip 401k before 59.5; pool same-tax accounts */
+      var done={};
+      for(var q=0;q<order.length&&short>1e-6;q++){
+        var id=order[q]; if(done[id]) continue;
+        var a=null;
+        for(var z=0;z<ACCOUNTS.length;z++) if(ACCOUNTS[z].id===id) a=ACCOUNTS[z];
+        if(!a) continue;
+        if((a.tax==='ord'||a.tax==='free')&&yr<=y.ret) continue;
+        if(a.tax==='edu') continue;
+        var rate=a.tax==='ord'?A.ordinaryTax:(a.tax==='gains'?A.capGainsTax:0);
+        /* find all accounts with same tax type in the order — draw proportionally */
+        var pool=[];
+        for(var q2=0;q2<order.length;q2++){
+          var id2=order[q2]; if(done[id2]) continue;
+          var a2=null;
+          for(var z2=0;z2<ACCOUNTS.length;z2++) if(ACCOUNTS[z2].id===id2) a2=ACCOUNTS[z2];
+          if(a2&&a2.tax===a.tax&&!(a2.tax==='ord'&&age<59.5)) pool.push(id2);
+        }
+        var poolBal=0; pool.forEach(function(pid){poolBal+=bal[pid]});
+        if(poolBal<=0){pool.forEach(function(pid){done[pid]=1}); continue}
+        var gross=short/(1-rate);
+        var take=Math.min(poolBal,gross);
+        pool.forEach(function(pid){
+          var share=(bal[pid]/poolBal)*take;
+          if(share>bal[pid]) share=bal[pid];
+          bal[pid]-=share; wd[pid]=(wd[pid]||0)+share;
+          done[pid]=1;
+        });
+        short-=take*(1-rate);
+      }
+
+
+      unmet=short;
+      if(unmet>1e-6&&!broke) broke=yr;
+
+    /* Required Minimum Distributions — mandatory 401k withdrawals from age 73 */
+    var rmdAge=73;
+    if(age>=rmdAge){
+      var factors=[26.5,25.5,24.6,23.7,22.9,22.0,21.1,20.2,19.4,18.5,17.7,16.8,16.0,15.2,14.4,13.7,12.9,12.2,11.5,10.8,10.1,9.5,8.9];
+      var fi=Math.min(age-rmdAge,factors.length-1);
+      var factor=factors[fi];
+      ['pretax','pretaxP'].forEach(function(id){
+        var rmd=bal[id]/factor;
+        if(rmd>0){
+          bal[id]-=rmd;
+          var afterTax=rmd*(1-A.ordinaryTax);
+          bal.taxable+=afterTax;
+          wd[id]=(wd[id]||0)+rmd;
+        }
+      });
+    }
+    }
+
+    /* Roth conversions: convert 401k → Roth in low-income years (retired, pre-SS) */
+    if(yr>y.ret&&ss===0&&A.rothConvMax>0){
+      var convBudget=A.rothConvMax;
+      ['pretax','pretaxP'].forEach(function(id){
+        var conv=Math.min(bal[id],convBudget/2);
+        if(conv>0){
+          bal[id]-=conv;
+          bal.roth+=conv*(1-A.rothConvTax);
+          wd[id]=(wd[id]||0)+conv;
+          convBudget-=conv;
+        }
+      });
+    }
+
+    var liquid=0;ACCOUNTS.forEach(function(a){liquid+=bal[a.id]});
+    var snap={};ACCOUNTS.forEach(function(a){snap[a.id]=bal[a.id]});
+    rows.push({y:yr,age:age,inc:inc,ss:ss,spend:spend,big:big,ev:evCost,hous:hous,con:toPre+toHsa+pPre,ownCon:toPre+toHsa,pcon:pPre,
+               grow:grow,net:net,liquid:liquid,eq:eq,nw:liquid+eq,acc:snap,unmet:unmet,wd:wd,
+               events:list.filter(function(e){return !e.quiet||e.cost>0}),from529:from529});
+  }
+  return {rows:rows,broke:broke,ok:!broke};
+}
+
+/* ── RULE 5: distributions, not a point ────────────────────────────── */
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function gaussFn(rnd){var sp=null;return function(){
+  if(sp!==null){var v=sp;sp=null;return v}
+  var u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();
+  var m=Math.sqrt(-2*Math.log(u)),a=2*Math.PI*v; sp=m*Math.sin(a); return m*Math.cos(a)}}
+
+function mc(n,seed){
+  var A=S.assum,y=Y(),len=y.end-y.base+1;
+  var rnd=mulberry(seed||12345), g=gaussFn(rnd);
+  var okN=0, nws=[], brokeAges=[], finals=[], atRet=[];
+  var ri=y.ret-y.base;
+  for(var k=0;k<n;k++){
+    var p=[],rp=[];
+    for(var i=0;i<len;i++){p.push(A.realReturn+g()*A.vol); rp.push(g()*A.rsuExtraVol)}
+    var o=run(p,rp);
+    if(o.ok)okN++; else brokeAges.push(o.broke-y.birth);
+    var arr=new Float64Array(len);
+    for(var i=0;i<len;i++)arr[i]=o.rows[i].nw;
+    nws.push(arr);
+    finals.push(o.rows[len-1].nw);
+    atRet.push(o.rows[ri]?o.rows[ri].nw:0);
+  }
+  /* percentile bands per year */
+  var bands=[];
+  for(var i=0;i<len;i++){
+    var col=new Float64Array(n);
+    for(var k2=0;k2<n;k2++)col[k2]=nws[k2][i];
+    Array.prototype.sort.call(col,function(a,b){return a-b});
+    bands.push({y:y.base+i,
+      p5:col[Math.floor(n*.05)],p25:col[Math.floor(n*.25)],p50:col[Math.floor(n*.5)],
+      p75:col[Math.floor(n*.75)],p95:col[Math.floor(n*.95)]});
+  }
+  brokeAges.sort(function(a,b){return a-b});
+  return {n:n, p:okN/n, bands:bands,
+          medBroke:brokeAges.length?brokeAges[Math.floor(brokeAges.length/2)]:null,
+          medRet:med(atRet), medFinal:med(finals)};
+}
+function med(a){var b=a.slice().sort(function(x,y){return x-y});return b[Math.floor(b.length/2)]}
+
+/* ── RULE 6: the model volunteers what matters ─────────────────────── */
+var LEVERS=[
+ {p:'dec.partnerRatio',   lab:'What your partner earns',   sub:'as a share of you',      lo:0,   hi:1.4,  f:'x'},
+ {p:'dec.partnerConRatio',lab:"Partner's retirement saving",sub:'vs your savings rate',lo:0,hi:1.4,f:'x'},
+ {p:'dec.postMbaBump',    lab:'Pay rise from the MBA',     sub:'on top of your old pay', lo:0,   hi:.4,   f:'%'},
+ {p:'assum.realReturn',   lab:'Real investment return',    sub:'after inflation',        lo:.02, hi:.06,  f:'%'},
+ {p:'dec.housePrice',     lab:'House price',               sub:"today's money",          lo:6e5, hi:18e5, f:'$'},
+ {p:'dec.retireAge',      lab:'Retirement age',            sub:'',                       lo:57,  hi:67,   f:'n'},
+ {p:'assum.incomeRealG',  lab:'Real income growth',        sub:'per year',               lo:-.005,hi:.02, f:'%'},
+ {p:'assum.spendRealG',   lab:'Real spending growth',      sub:'lifestyle creep',        lo:0,   hi:.015, f:'%'},
+ {p:'dec.hhSpendMult',    lab:'Household spending',        sub:'vs living alone',        lo:1.3, hi:1.9,  f:'x'},
+ {p:'dec.pretaxFrac',   lab:'Share of saving to 401(k)',sub:'rest goes to taxable',   lo:.2,  hi:1.0,  f:'%'},
+ {p:'dec.p529Annual',   lab:'529 annual contribution', sub:'while kids are under 18', lo:0,   hi:25000, f:'$'},
+ {p:'dec.collegeCost',    lab:'College, per child-year',   sub:"today's money",          lo:5e4, hi:15e4, f:'$'},
+ {p:'dec.kidCost',        lab:'Raising a child, per year', sub:'each, to 18',            lo:2e4, hi:5e4,  f:'$'},
+ {p:'assum.ssReal',       lab:'Social Security',           sub:'both of you',            lo:0,   hi:9e4,  f:'$'},
+ {p:'assum.vol',          lab:'Market volatility',         sub:'standard deviation',     lo:.08, hi:.20,  f:'%'},
+ {p:'assum.ordinaryTax',  lab:'Tax on 401k withdrawals',   sub:'',                       lo:.15, hi:.32,  f:'%'},
+ {p:'dec.mortRate',       lab:'Mortgage rate',             sub:'',                       lo:.045,hi:.085, f:'%'},
+ {p:'assum.retSpendStep', lab:'Spending drop at retiring', sub:'vs last working year',   lo:.65, hi:1.0,  f:'%'}
+];
+function getP(p){var a=p.split('.');return S[a[0]][a[1]]}
+function setP(p,v){var a=p.split('.');S[a[0]][a[1]]=v}
+
+function tornado(){
+  var out=[],TP=160,seed=777,LI=Y().end-Y().base;
+  var b=mc(TP,seed).p, db=run().rows[LI].nw;
+  LEVERS.forEach(function(L){
+    var old=getP(L.p);
+    setP(L.p,L.lo); var lo=mc(TP,seed).p, dlo=run().rows[LI].nw;
+    setP(L.p,L.hi); var hi=mc(TP,seed).p, dhi=run().rows[LI].nw;
+    setP(L.p,old);
+    /* two different questions, deliberately both measured:
+       span  = can this END the plan (saturates near 100%)
+       dspan = how much MONEY is it worth (does not saturate, but ignores ruin) */
+    out.push({L:L,lo:lo,hi:hi,base:b,span:Math.abs(hi-lo),
+              dlo:dlo,dhi:dhi,dbase:db,dspan:Math.abs(dhi-dlo)});
+  });
+  out.sort(function(a,b2){return b2.span-a.span});
+  return {base:b,dbase:db,rows:out};
+}
+
+/* ── takeaways: the questions a person actually asks ──────────────── */
+function insights(){
+  var y=Y(),R=DET.rows,ri=y.ret-y.base,L=R.length-1;
+  var start=0;ACCOUNTS.forEach(function(a){start+=S.facts[a.id]||0});
+  var grow=0,inc=0,spent=0;
+  for(var i=0;i<=ri;i++){grow+=R[i].grow; inc+=R[i].inc; spent+=R[i].spend+R[i].big}
+  var liq=R[ri].liquid, you=liq-start-grow;
+  var fr=R[ri+1]||R[ri];
+  var mx=R[0];for(var i=0;i<R.length;i++){if(R[i].spend+R[i].big>mx.spend+mx.big)mx=R[i]}
+  /* earliest age you could stop working and still clear 85% */
+  var od=S.dec.retireAge,earliest=null;
+  for(var a=50;a<=70;a++){S.dec.retireAge=a;if(run().ok){earliest=a;break}}
+  S.dec.retireAge=od;
+  /* how much you could spend in retirement and still clear 90% */
+  var os=S.assum.retSpendStep,lo=.3,hi=2.6;
+  for(var k=0;k<11;k++){var m=(lo+hi)/2;S.assum.retSpendStep=m;
+    if(mc(120,999).p>=.90)lo=m;else hi=m}
+  S.assum.retSpendStep=lo; var safe=spendReal(y.ret+1)/12; S.assum.retSpendStep=os;
+  /* the year you could stop saving entirely and coast */
+  var oc=S.dec.coastFrom,lo2=y.base,hi2=y.ret+1;
+  S.dec.coastFrom=y.base;
+  var coast=(mc(120,999).p>=.85)?y.base:null;
+  if(coast===null){
+    while(hi2-lo2>1){var mid=Math.floor((lo2+hi2)/2);S.dec.coastFrom=mid;
+      if(mc(120,999).p>=.85)hi2=mid;else lo2=mid}
+    coast=(hi2<=y.ret)?hi2:null;
+  }
+  S.dec.coastFrom=oc;
+  /* if the market gave you nothing in real terms, ever */
+  var orr=S.assum.realReturn;S.assum.realReturn=0;var zr=run();S.assum.realReturn=orr;
+  return {start:start,grow:grow,you:you,liq:liq,nw60:R[ri].nw,nw95:R[L].nw,eq60:R[ri].eq,
+          monthly:fr.spend/12,lastWork:R[ri].spend/12,nowMonthly:S.facts.spending/12,
+          mx:mx,earliest:earliest,safe:safe,coast:coast,
+          zeroOk:zr.ok,zeroBroke:zr.broke,inc:inc,spent:spent};
+}
+
+/* ── RULE 8: solve backwards ───────────────────────────────────────── */
+function solveFor(p,lo,hi,target){
+  /* find the value of p at which the deterministic plan stops working.
+     target: 'ok' = never runs out. Assumes monotonic in the usual direction. */
+  var old=getP(p);
+  setP(p,lo); var okLo=run().ok;
+  setP(p,hi); var okHi=run().ok;
+  if(okLo===okHi){setP(p,old);return {none:true,okLo:okLo}}
+  var a=lo,b=hi;
+  for(var i=0;i<48;i++){
+    var m=(a+b)/2; setP(p,m);
+    if(run().ok===okHi) b=m; else a=m;
+  }
+  setP(p,old);
+  return {none:false,val:(a+b)/2,worksAbove:okHi};
+}
+
+/* ── stress scenarios: multiple levers moved at once ── */
+var SCENARIOS=[
+  {name:'Base case', desc:'Everything as set now', ov:{}},
+  {name:'Bad decade', desc:'2% real return, 18% volatility',
+   ov:{'assum.realReturn':.02,'assum.vol':.18}},
+  {name:'Single income', desc:'Partner earns nothing',
+   ov:{'dec.partnerRatio':0,'dec.partnerConRatio':0}},
+  {name:'Expensive life', desc:'$1.5M house, $50k/yr kids, $150k college',
+   ov:{'dec.housePrice':1500000,'dec.kidCost':50000,'dec.collegeCost':150000}},
+  {name:'Bad luck', desc:'Bad returns + single income',
+   ov:{'assum.realReturn':.02,'assum.vol':.18,'dec.partnerRatio':0,'dec.partnerConRatio':0}},
+  {name:'Perfect storm', desc:'Bad returns + single income + expensive house',
+   ov:{'assum.realReturn':.02,'assum.vol':.18,'dec.partnerRatio':0,'dec.partnerConRatio':0,
+       'dec.housePrice':1500000}}
+];
+function stressAll(){
+  return SCENARIOS.map(function(sc){
+    var saved={};
+    for(var p in sc.ov){saved[p]=getP(p); setP(p,sc.ov[p])}
+    var r=mc(200,777), d=run(), li=d.rows.length-1;
+    var res={name:sc.name,desc:sc.desc,p:r.p,nw:d.rows[li].nw,broke:d.broke,
+             medBroke:r.medBroke};
+    for(var p in saved) setP(p,saved[p]);
+    return res;
+  });
+}
+
+/* ── MC-based solver: find where P(success) drops below a threshold ── */
+function solveMC(p,lo,hi,thresh){
+  thresh=thresh||.85;
+  var old=getP(p), N=80, seed=777;
+  setP(p,lo); var pLo=mc(N,seed).p;
+  setP(p,hi); var pHi=mc(N,seed).p;
+  /* if both sides are above or both below threshold, no crossing */
+  if(pLo>=thresh&&pHi>=thresh){setP(p,old);return {none:true,safe:true}}
+  if(pLo<thresh&&pHi<thresh){setP(p,old);return {none:true,safe:false}}
+  var a=lo,b=hi;
+  for(var i=0;i<14;i++){
+    var m2=(a+b)/2; setP(p,m2);
+    if(mc(N,seed).p>=thresh===(pHi>=thresh)) b=m2; else a=m2;
+  }
+  setP(p,old);
+  return {none:false,val:(a+b)/2,worksAbove:pHi>=thresh};
+}
+
+</script>
+<script>
+/* ══════════════ display layer ══════════════ */
+var UNIT='real', DET=null, MCR=null, TOR=null, TORQ=null, INS=null;
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function infl(yr){return Math.pow(1+S.assum.inflation,yr-S.facts.baseYear)}
+function disp(v,yr){return UNIT==='nom'?v*infl(yr):v}
+function $m(v){var s=v<0?'-':'';v=Math.abs(Math.round(v));
+  return s+'$'+v.toString().replace(/\B(?=(\d{3})+(?!\d))/g,',')}
+function $k(v){var a=Math.abs(v);
+  if(a>=1e6)return (v<0?'-':'')+'$'+(a/1e6).toFixed(a>=1e7?1:2)+'M';
+  if(a>=1e3)return (v<0?'-':'')+'$'+Math.round(a/1e3)+'k';
+  return $m(v)}
+function pc(v,d){return (v*100).toFixed(d===undefined?1:d)+'%'}
+function fmtL(f,v){return f==='%'?pc(v,1):f==='$'?$k(v):f==='x'?(v.toFixed(2)+'x'):Math.round(v)}
+
+function go(t){
+  ['verdict','life'].forEach(function(k){
+    $('v-'+k).className='v'+(k===t?' on':''); $('t-'+k).className='tb'+(k===t?' on':'')});
+}
+$('unitChip').onclick=function(){UNIT=UNIT==='real'?'nom':'real';
+  this.textContent=UNIT==='real'?"today's money":'nominal dollars';
+  this.style.color=UNIT==='real'?'':'var(--warn)'; render()};
+
+/* ══════════════ charts ══════════════ */
+function axes(g,x0,x1,yTop,yBot,lo,hi,years){
+  var o='',n=5;
+  for(var i=0;i<=n;i++){
+    var v=lo+(hi-lo)*i/n, yy=yBot-(yBot-yTop)*i/n;
+    o+='<line x1="'+x0+'" y1="'+yy+'" x2="'+x1+'" y2="'+yy+'" stroke="#1b1f26" stroke-width="1"/>';
+    o+='<text x="'+(x0-8)+'" y="'+(yy+4)+'" fill="#646c7a" font-size="11" text-anchor="end" font-family="JetBrains Mono,monospace">'+$k(v)+'</text>';
+  }
+  years.forEach(function(yr){
+    var xx=x0+(x1-x0)*(yr.i);
+    o+='<text x="'+xx+'" y="'+(yBot+18)+'" fill="#646c7a" font-size="11" text-anchor="middle">'+yr.l+'</text>';
+  });
+  return o;
+}
+function drawFan(){
+  if(!MCR)return;
+  var b=MCR.bands,y=Y(),n=b.length;
+  var x0=78,x1=975,yt=18,yb=372;
+  var lo=0,hi=0;
+  b.forEach(function(r){hi=Math.max(hi,disp(r.p95,r.y));lo=Math.min(lo,disp(r.p5,r.y))});
+  DET.rows.forEach(function(r){hi=Math.max(hi,disp(r.nw,r.y))});
+  hi=hi*1.06; lo=Math.min(lo*1.06,0);
+  var X=function(i){return x0+(x1-x0)*i/(n-1)};
+  var Yv=function(v){return yb-(yb-yt)*(v-lo)/(hi-lo||1)};
+  function band(a,c,col){
+    var up='',dn='';
+    for(var i=0;i<n;i++){up+=(i?'L':'M')+X(i).toFixed(1)+' '+Yv(disp(b[i][a],b[i].y)).toFixed(1)+' '}
+    for(var i=n-1;i>=0;i--){dn+='L'+X(i).toFixed(1)+' '+Yv(disp(b[i][c],b[i].y)).toFixed(1)+' '}
+    return '<path d="'+up+dn+'Z" fill="'+col+'" opacity=".9"/>';
+  }
+  function line(a,col,w,dash){
+    var d='';for(var i=0;i<n;i++){d+=(i?'L':'M')+X(i).toFixed(1)+' '+Yv(disp(b[i][a],b[i].y)).toFixed(1)+' '}
+    return '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="'+w+'"'+(dash?' stroke-dasharray="'+dash+'"':'')+'/>';
+  }
+  var det='';DET.rows.forEach(function(r,i){det+=(i?'L':'M')+X(i).toFixed(1)+' '+Yv(disp(r.nw,r.y)).toFixed(1)+' '});
+  var ticks=[];[0,10,20,30,40,50,60,n-1].forEach(function(i){if(i<n)ticks.push({i:i/(n-1),l:b[i].y})});
+  var zero=Yv(0);
+  var marks='';
+  [{y:y.ret,l:'retire',c:'#7fa9ef'},{y:S.dec.houseYear,l:'house',c:'#e8b16a'},
+   {y:S.dec.kid1+18,l:'college',c:'#d98fb0'}].forEach(function(m){
+    var i=m.y-y.base; if(i<0||i>=n)return; var xx=X(i);
+    marks+='<line x1="'+xx+'" y1="'+yt+'" x2="'+xx+'" y2="'+yb+'" stroke="'+m.c+'" stroke-width="1" opacity=".3" stroke-dasharray="3 4"/>'+
+           '<text x="'+(xx+4)+'" y="'+(yt+11)+'" fill="'+m.c+'" font-size="10" opacity=".8">'+m.l+'</text>';
+  });
+  $('fan').innerHTML=axes(0,x0,x1,yt,yb,lo,hi,ticks)+marks+
+    band('p5','p95','#22303f')+band('p25','p75','#31465e')+
+    (lo<0?'<line x1="'+x0+'" y1="'+zero+'" x2="'+x1+'" y2="'+zero+'" stroke="#ef7f7f" stroke-width="1" opacity=".6"/>':'')+
+    line('p50','#eef1f5',2.2)+
+    '<path d="'+det+'" fill="none" stroke="#e8b16a" stroke-width="1.6" stroke-dasharray="5 4"/>';
+  var last=b[n-1],lr=DET.rows[DET.rows.length-1];
+  $('fanNote').innerHTML='<div class="note'+(MCR.p<.75?' w':'')+'">At age '+S.dec.endAge+
+    ', the middle half of outcomes land between <b>'+$k(disp(last.p25,last.y))+'</b> and <b>'+
+    $k(disp(last.p75,last.y))+'</b>. The unlucky 5% are at '+$k(disp(last.p5,last.y))+
+    '; the lucky 5% above '+$k(disp(last.p95,last.y))+'. The dashed line is the single-number forecast a '+
+    'spreadsheet would give you — '+$k(disp(lr.nw,lr.y))+' — which sits at roughly the '+
+    Math.round(pctlOf(lr.nw)*100)+'th percentile. That is the whole argument for not quoting one number.</div>';
+}
+function pctlOf(v){
+  var b=MCR.bands[MCR.bands.length-1];
+  var pts=[[.05,b.p5],[.25,b.p25],[.5,b.p50],[.75,b.p75],[.95,b.p95]];
+  if(v<=pts[0][1])return .05; if(v>=pts[4][1])return .95;
+  for(var i=1;i<pts.length;i++) if(v<=pts[i][1]){
+    var a=pts[i-1],c=pts[i]; return a[0]+(c[0]-a[0])*(v-a[1])/((c[1]-a[1])||1)}
+  return .5;
+}
+function drawDial(){
+  var p=MCR?MCR.p:0, R=74, C=2*Math.PI*R, col=p>=.85?'#5fd4a4':p>=.7?'#e8b16a':'#ef7f7f';
+  $('dial').innerHTML='<circle cx="86" cy="86" r="'+R+'" fill="none" stroke="#1b1f26" stroke-width="13"/>'+
+   '<circle cx="86" cy="86" r="'+R+'" fill="none" stroke="'+col+'" stroke-width="13" stroke-linecap="round" '+
+   'stroke-dasharray="'+(C*p).toFixed(1)+' '+C.toFixed(1)+'"/>';
+  $('dialPc').textContent=Math.round(p*100)+'%';
+  $('dialPc').style.color=col;
+}
+function drawStack(){
+  var rows=DET.rows,n=rows.length,x0=78,x1=975,yt=16,yb=330;
+  var hi=0;rows.forEach(function(r){var t=0;ACCOUNTS.forEach(function(a){t+=Math.max(0,r.acc[a.id])});
+    hi=Math.max(hi,disp(t+Math.max(0,r.eq),r.y))});
+  hi*=1.05;
+  var X=function(i){return x0+(x1-x0)*i/(n-1)},Yv=function(v){return yb-(yb-yt)*v/(hi||1)};
+  var series=ACCOUNTS.concat([{id:'_eq',nm:'House equity',c:'#8b949e'}]);
+  var base=new Array(n).fill(0),out='';
+  series.forEach(function(a){
+    var up='',dn='';
+    for(var i=0;i<n;i++){
+      var v=a.id==='_eq'?Math.max(0,rows[i].eq):Math.max(0,rows[i].acc[a.id]);
+      var top=base[i]+disp(v,rows[i].y);
+      up+=(i?'L':'M')+X(i).toFixed(1)+' '+Yv(top).toFixed(1)+' ';
+      base[i]=top;
+    }
+    for(var i=n-1;i>=0;i--){
+      var v=a.id==='_eq'?Math.max(0,rows[i].eq):Math.max(0,rows[i].acc[a.id]);
+      dn+='L'+X(i).toFixed(1)+' '+Yv(base[i]-disp(v,rows[i].y)).toFixed(1)+' ';
+    }
+    out+='<path d="'+up+dn+'Z" fill="'+a.c+'" opacity=".82"/>';
+  });
+  var ticks=[];[0,10,20,30,40,50,60,n-1].forEach(function(i){if(i<n)ticks.push({i:i/(n-1),l:rows[i].y})});
+  $('stack').innerHTML=axes(0,x0,x1,yt,yb,0,hi,ticks)+out;
+  /* callouts at key events */
+  var evYears={};
+  buildEvents().forEach(function(e){
+    if(e.quiet||e.cost<=0&&e.tag!=='retire'&&e.tag!=='couple') return;
+    if(!evYears[e.y]) evYears[e.y]={y:e.y,labs:[],cost:0};
+    evYears[e.y].cost+=e.cost||0;
+    if(evYears[e.y].labs.indexOf(e.lab)<0) evYears[e.y].labs.push(e.lab);
+  });
+  /* pick the most significant years to annotate */
+  var prev=0,callouts=[];
+  rows.forEach(function(r,i){
+    var nw=disp(r.nw,r.y);
+    var delta=nw-prev;
+    var ev=evYears[r.y];
+    if(ev&&(Math.abs(ev.cost)>40000||ev.labs.some(function(l){return /Retire|Married|house|Graduate|college 1|Social/.test(l)}))){
+      var topY=0;ACCOUNTS.forEach(function(a){topY+=Math.max(0,disp(r.acc[a.id],r.y))});
+      topY+=Math.max(0,disp(r.eq,r.y));
+      callouts.push({i:i,y:r.y,nw:nw,topY:topY,lab:ev.labs[0].replace(/Kid \d — /,''),delta:delta});
+    }
+    prev=nw;
+  });
+  /* deduplicate nearby callouts */
+  var shown=[],lastI=-10;
+  callouts.forEach(function(c){if(c.i-lastI>=3){shown.push(c);lastI=c.i}});
+  var co='';
+  shown.forEach(function(c,idx){
+    var cx=X(c.i), cy=Yv(c.topY)-8;
+    if(cy<yt+8) cy=yt+8;
+    /* alternate above/below to avoid overlap */
+    var above=idx%2===0;
+    var ty=above?cy-4:cy+12;
+    co+='<line x1="'+cx.toFixed(1)+'" y1="'+(above?ty+4:Yv(c.topY)).toFixed(1)+'" x2="'+cx.toFixed(1)+'" y2="'+Yv(c.topY).toFixed(1)+'" stroke="var(--t5)" stroke-width=".5" stroke-dasharray="2,2"/>';
+    co+='<text x="'+cx.toFixed(1)+'" y="'+ty.toFixed(1)+'" fill="var(--t3)" font-size="8" text-anchor="middle">'+c.lab+'</text>';
+  });
+  $('stack').innerHTML+= co;
+  $('stackLeg').innerHTML=series.map(function(a){
+    return '<span><i class="sq" style="background:'+a.c+'"></i>'+a.nm+'</span>'}).join('');
+  chartHover('stack',{n:n,rows:rows,series:series.map(function(a){
+    return {nm:a.nm,val:function(r){return a.id==='_eq'?disp(r.eq,r.y):disp(r.acc[a.id],r.y)}}
+  }).concat([{nm:'Net worth',val:function(r){return disp(r.nw,r.y)}}])});
+}
+
+function drawDrawdown(){
+  var R=DET.rows,n=R.length,x0=80,x1=978,yTop=14,yBot=200;
+  var y=Y();
+  /* find peak balance across all accounts */
+  var max=1;
+  R.forEach(function(r){ACCOUNTS.forEach(function(a){max=Math.max(max,r.acc[a.id])})});
+  function X(i){return x0+(x1-x0)*i/(n-1)}
+  function Y2(v){return yBot-(yBot-yTop)*Math.min(1,v/max)}
+
+  var out='';
+  /* retirement shading */
+  var rx=X(y.ret-y.base);
+  out+='<rect x="'+rx+'" y="'+yTop+'" width="'+(x1-rx)+'" height="'+(yBot-yTop)+
+       '" fill="#7fa9ef" opacity=".04" rx="2"/>';
+
+  /* grid lines */
+  for(var gi=0;gi<=4;gi++){
+    var gv=max*gi/4, gy=Y2(gv);
+    out+='<line x1="'+x0+'" y1="'+gy.toFixed(1)+'" x2="'+x1+'" y2="'+gy.toFixed(1)+'" stroke="var(--bd)" stroke-width=".5"/>';
+    out+='<text x="'+(x0-6)+'" y="'+(gy+4)+'" fill="var(--t5)" font-size="9" text-anchor="end" font-family="var(--mono)">'+$k(gv)+'</text>';
+  }
+
+  /* one line per account */
+  var active=ACCOUNTS.filter(function(a){
+    var has=false; R.forEach(function(r){if(r.acc[a.id]>100)has=true}); return has;
+  });
+  active.forEach(function(a){
+    var pts=R.map(function(r,i){return X(i).toFixed(1)+','+Y2(r.acc[a.id]).toFixed(1)});
+    /* filled area under the line */
+    out+='<path d="M'+pts.join('L')+'L'+X(n-1).toFixed(1)+','+yBot+'L'+X(0).toFixed(1)+','+yBot+'Z" fill="'+a.c+'" opacity=".08"/>';
+    /* the line */
+    out+='<path d="M'+pts.join('L')+'" stroke="'+a.c+'" stroke-width="1.8" fill="none"/>';
+    /* label at the peak */
+    var peakI=0,peakV=0;
+    R.forEach(function(r,i){if(r.acc[a.id]>peakV){peakV=r.acc[a.id];peakI=i}});
+    var lx=X(peakI), ly=Y2(peakV)-6;
+    if(ly<yTop+10) ly=Y2(peakV)+14;
+    var nm=a.nm.replace('401(k) pre-tax','401(k)').replace("Partner's 401(k)","Partner");
+    out+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" fill="'+a.c+'" font-size="9" text-anchor="middle" font-weight="500">'+nm+'</text>';
+  });
+
+  /* withdrawal markers: small dots where money comes out */
+  R.forEach(function(r,i){
+    ACCOUNTS.forEach(function(a){
+      var v=(r.wd[a.id]||0)+(a.id==='p529'?(r.from529||0):0);
+      if(v>0){
+        out+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y2(r.acc[a.id]).toFixed(1)+
+             '" r="3" fill="'+a.c+'" opacity=".7"><title>'+r.y+': '+$k(v)+' from '+a.nm+'</title></circle>';
+      }
+    });
+  });
+
+  /* milestone callouts on the chart */
+  var evYears={};
+  buildEvents().forEach(function(e){
+    if(e.quiet||e.cost<=0&&e.tag!=='retire'&&e.tag!=='couple') return;
+    if(!evYears[e.y]) evYears[e.y]={y:e.y,labs:[],cost:0};
+    evYears[e.y].cost+=e.cost||0;
+    if(evYears[e.y].labs.indexOf(e.lab)<0) evYears[e.y].labs.push(e.lab);
+  });
+  var callouts=[],lastCI=-10;
+  R.forEach(function(r,i){
+    var ev=evYears[r.y];
+    if(ev&&(Math.abs(ev.cost)>30000||ev.labs.some(function(l){return /Retire|Married|house|Graduate|college 1|Social/.test(l)}))){
+      if(i-lastCI>=3){callouts.push({i:i,y:r.y,lab:ev.labs[0].replace(/Kid \d — /,'')});lastCI=i}
+    }
+  });
+  callouts.forEach(function(c,idx){
+    var cx=X(c.i);
+    out+='<line x1="'+cx.toFixed(1)+'" y1="'+yTop+'" x2="'+cx.toFixed(1)+'" y2="'+yBot+'" stroke="var(--t5)" stroke-width=".5" stroke-dasharray="2,3" opacity=".4"/>';
+    var labY=yTop-3-(idx%2)*10;
+    out+='<text x="'+cx.toFixed(1)+'" y="'+labY+'" fill="var(--t4)" font-size="7" text-anchor="middle">'+c.lab+'</text>';
+  });
+
+  /* flag first-tap and dry years */
+  active.forEach(function(a){
+    var first=null,dry=null;
+    R.forEach(function(r,i){
+      var v=(r.wd[a.id]||0)+(a.id==='p529'?(r.from529||0):0);
+      if(v>0&&first===null) first=i;
+      if(dry===null&&first!==null&&r.acc[a.id]<1&&i>first) dry=i;
+    });
+    if(first!==null){
+      var fx=X(first), fy=Y2(R[first].acc[a.id]);
+      out+='<line x1="'+fx.toFixed(1)+'" y1="'+fy.toFixed(1)+'" x2="'+fx.toFixed(1)+'" y2="'+yBot+'" stroke="'+a.c+'" stroke-width="1" stroke-dasharray="3,3" opacity=".5"/>';
+    }
+    if(dry!==null){
+      var dx=X(dry);
+      out+='<line x1="'+dx.toFixed(1)+'" y1="'+yTop+'" x2="'+dx.toFixed(1)+'" y2="'+yBot+'" stroke="'+a.c+'" stroke-width="1" stroke-dasharray="2,4" opacity=".35"/>';
+      out+='<text x="'+(dx+3).toFixed(1)+'" y="'+(yTop+10)+'" fill="'+a.c+'" font-size="7.5" opacity=".7">empty</text>';
+    }
+  });
+  
+    /* year labels */
+  [0,15,30,45,n-1].forEach(function(i){if(i>=n)return;
+    out+='<text x="'+X(i).toFixed(1)+'" y="'+(yBot+14)+'" fill="var(--t5)" font-size="9" text-anchor="middle">'+R[i].y+'</text>'});
+  /* retirement label */
+  out+='<text x="'+(rx+4)+'" y="'+(yTop+10)+'" fill="#7fa9ef" font-size="9" opacity=".6">retired</text>';
+
+  $('draw').setAttribute('viewBox','0 0 1060 220');
+  $('draw').innerHTML=out;
+  chartHover('draw',{n:n,rows:R,series:active.map(function(a){
+    return {nm:a.nm,val:function(r){return r.acc[a.id]}}
+  })});
+
+  var leg='<div class="leg" style="margin-top:8px">'+
+    active.map(function(a){
+      return '<span><i class="sq" style="background:'+a.c+'"></i>'+a.nm+'</span>'
+    }).join('')+'</div>';
+  var drawEl=document.getElementById('draw');
+  if(drawEl&&drawEl.parentNode){
+    var legEl=drawEl.parentNode.querySelector('.leg');
+    if(!legEl){legEl=document.createElement('div');drawEl.parentNode.appendChild(legEl)}
+    legEl.className='leg';legEl.style.marginTop='8px';legEl.innerHTML=leg.replace(/<\/?div[^>]*>/g,'');
+  }
+}
+
+/* ══════════════ panels ══════════════ */
+function tiles(){
+  var y=Y(),R=DET.rows,ri=y.ret-y.base,rr=R[ri];
+  var I=INS;
+  /* spending room: average annual surplus during working years */
+  var surplusYrs=0,surplusTotal=0;
+  R.forEach(function(r){if(r.y>y.base+2&&r.y<=y.ret&&r.net>0){surplusTotal+=r.net;surplusYrs++}});
+  var avgSurplus=surplusYrs>0?surplusTotal/surplusYrs:0;
+  /* decomposition: how much of retirement NW is saved vs returns */
+  var totalSaved=0,totalGrowth=0;
+  R.forEach(function(r){if(r.y<=y.ret){totalSaved+=r.con;totalGrowth+=r.grow}});
+  var startBal=0;ACCOUNTS.forEach(function(a){startBal+=S.facts[a.id]||0});
+  var growthPct=rr.nw>0?Math.round((totalGrowth/(rr.nw-rr.eq))*100):0;
+
+  var t=[
+   ['Retire at', ''+S.dec.retireAge, 'ok', ''],
+   ['Could stop at', I?(I.earliest?''+I.earliest:'—'):'…', I&&I.earliest&&I.earliest<S.dec.retireAge?'ok':'',
+     I&&I.earliest?(S.dec.retireAge-I.earliest)+' years of flexibility':'no room to retire early'],
+   ['With', $k(disp(rr.nw,rr.y)), 'info',
+     growthPct+'% from returns, '+(100-growthPct)+'% saved'],
+   ['Into savings', $m(avgSurplus/12)+'<em>/mo</em>', avgSurplus>0?'ok':'warn',
+     'average going to taxable each month — spending this means less at retirement'],
+   ['Spending', $m(disp(rr.spend,rr.y)/12)+'<em>/mo</em>','',
+     'in retirement, today\'s money']];
+  $('vTiles').innerHTML=t.map(function(r){
+    return '<div class="tile"><div class="v2 '+r[2]+'">'+r[1]+'</div><div class="k">'+r[0]+'</div>'+
+      (r[3]?'<div class="s">'+r[3]+'</div>':'')+'</div>'}).join('');
+}
+function renderTakeaways(){
+  if(!INS||!MCR){$('takeaways').innerHTML='';return}
+  var I=INS,y=Y(),R=DET.rows,ri=y.ret-y.base;
+  var gp=I.grow/(I.liq||1), P=[];
+  P.push('Of your '+$k(I.liq)+' at retirement, <b>'+$k(I.start)+'</b> is what you have now, <b>'+
+    $k(I.you)+'</b> is what you save, and <b>'+$k(I.grow)+'</b> ('+pc(gp,0)+') is market growth.');
+  if(I.earliest&&I.earliest<S.dec.retireAge)
+    P.push('You could stop working at <b>'+I.earliest+'</b> — '+(S.dec.retireAge-I.earliest)+
+      ' years earlier than planned.');
+  if(I.coast&&I.coast<=y.ret)
+    P.push('From <b>'+(I.coast-y.birth)+'</b> you could stop saving entirely and still be fine.');
+  P.push('Worst single year: <b>'+I.mx.y+'</b> at <b>'+$k(I.mx.spend+I.mx.big)+'</b>'+
+    (I.mx.events.length?' — '+I.mx.events.map(function(e){return e.lab}).slice(0,2).join(' + '):'')+'.');
+  $('takeaways').innerHTML='<div class="tk">'+P.map(function(p){
+    return '<p><span>'+p+'</span></p>'}).join('')+'</div>';
+}
+function verdictText(){
+  if(!MCR)return;
+  var p=MCR.p,y=Y();
+  var head=p>=.9?'This plan holds up.':p>=.75?'This plan probably works.':
+           p>=.5?'This plan is a coin flip.':'This plan does not work as written.';
+  var top=TOR&&TOR.rows[0];
+  var sub='Across '+MCR.n.toLocaleString()+' return paths, '+Math.round(p*100)+
+    '% of them get you to '+S.dec.endAge+' without running out. ';
+  if(MCR.medBroke) sub+='In the ones that fail, the money typically goes at age '+MCR.medBroke+'. ';
+  if(top) sub+='The assumption doing the most work is <b style="color:var(--t1)">'+top.L.lab.toLowerCase()+
+    '</b> — moving it across its plausible range swings your odds by '+Math.round(top.span*100)+' points.';
+  $('vBig').textContent=head;
+  $('vSub').innerHTML=sub;
+  var u=Object.keys(S.unknown).filter(function(k){return S.unknown[k]});
+  $('unkBar').innerHTML=u.length?'<div class="warnbar"><b>'+u.length+
+    (u.length===1?' figure is a placeholder':' figures are placeholders')+':</b> '+
+    u.map(function(k){var a=null;ACCOUNTS.forEach(function(x){if(x.id===k)a=x});return a?a.nm:k}).join(', ')+
+    ' — sitting at zero because I do not know the real number, which means everything below is the '+
+    'pessimistic case. Type it under Levers \u2192 Facts and the amber outline clears.</div>':'';
+}
+function drawTornado(){
+  if(!TOR)return;
+  var b=TOR.base;
+  var all=TOR.rows.map(function(r){
+    var w=r.lo<=r.hi?{p:r.lo,v:r.L.lo}:{p:r.hi,v:r.L.hi};
+    return {L:r.L,w:w,drop:Math.max(0,b-w.p),cur:getP(r.L.p)};
+  }).sort(function(x,y){return y.drop-x.drop});
+  var show=all.slice(0,8), rest=all.slice(8), max=show[0].drop||1;
+
+  /* compute MC limits for the shown levers */
+  var limits={};
+  show.forEach(function(r){
+    limits[r.L.p]=solveMC(r.L.p,r.L.lo,r.L.hi,Math.max(.15,b*.5));
+  });
+
+  var floor=rest.length?Math.min.apply(null,rest.map(function(r){return r.w.p})):1;
+  $('tornado').innerHTML=
+    '<div class="torhead"><span>Assumption</span><b>impact on your odds</b><span>your limit</span></div>'+
+    show.map(function(r){
+      var lim=limits[r.L.p]; var thresh=Math.max(.15,b*.5);
+      var limStr='', roomStr='';
+      if(lim&&!lim.none){
+        limStr=fmtL(r.L.f,lim.val);
+        var room=Math.abs(r.cur-lim.val);
+        var range=r.L.hi-r.L.lo;
+        var pct=room/range;
+        var col=pct>.4?'var(--ok)':pct>.15?'var(--warn)':'var(--bad)';
+        roomStr='<span style="color:'+col+';font-size:10px">'+fmtL(r.L.f,room)+' of room</span>';
+      } else if(lim&&lim.none&&lim.safe){
+        limStr='—';
+        roomStr='<span style="color:var(--ok);font-size:10px">safe on its own</span>';
+      }
+      return '<div class="row"><div class="nm">'+esc(r.L.lab)+
+        (r.L.sub?'<small>'+esc(r.L.sub)+'</small>':'')+'</div>'+
+        '<div class="bar"><i class="lo" style="left:0;width:'+(r.drop/max*100).toFixed(1)+
+          '%" title="'+esc(fmtL(r.L.f,r.w.v))+' → '+Math.round(r.w.p*100)+'% odds"></i></div>'+
+        '<div class="amt"><span class="w">'+Math.round(r.w.p*100)+'%'+
+        ' <span style="color:var(--t5);font-size:9px">at '+esc(fmtL(r.L.f,r.w.v))+'</span></span>'+
+        '<span style="color:var(--t3)">limit '+limStr+'</span>'+
+        roomStr+'</div></div>'}).join('')+
+    (rest.length?'<div style="font-size:12px;color:var(--t5);padding:11px 0 2px;line-height:1.6">'+
+      'Nothing else drops you below <b style="color:var(--t3)">'+Math.round(floor*100)+'%</b> on its own: '+
+      rest.map(function(r){return esc(r.L.lab.toLowerCase())}).join(', ')+'.</div>':'')+
+    '<div class="note b" style="margin-bottom:0">Each bar shows the damage when one assumption goes to the '+
+    'worst end of its plausible range. The <b>limit</b> is the value where your odds drop below 85%. '+
+    '<b>Room</b> is how far you are from that limit.</div>';
+}
+
+/* ── levers ── */
+function fld(path,lab,hint,min,max,step,fmt){
+  var v=getP(path),id='f_'+path.replace('.','_');
+  var unk=path.indexOf('facts.')===0&&S.unknown[path.split('.')[1]];
+  return '<div class="f"><label><span>'+esc(lab)+'</span><b>'+fmtL(fmt,v)+'</b></label>'+
+    '<input class="rng" type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+v+
+    '" oninput="setLever(\''+path+'\',+this.value)">'+
+    '<input type="number" step="'+step+'" value="'+v+'" id="'+id+'"'+(unk?' class="unk"':'')+
+    ' onchange="setLever(\''+path+'\',+this.value,1)">'+
+    (hint?'<div class="hint">'+hint+'</div>':'')+'</div>';
+}
+function setLever(p,v,re){
+  setP(p,v);
+  if(re&&p.indexOf('facts.')===0&&S.unknown[p.split('.')[1]]){delete S.unknown[p.split('.')[1]]}
+  save();render();
+}
+function renderLevers(){
+  var F=[
+    fld('facts.takeHome','Take-home pay, 2025','After tax, 401k, HSA and ESPP.',40000,200000,500,'$'),
+    fld('facts.spending','Spending, 2025','Everything you live on, rent included.',30000,150000,500,'$'),
+    fld('facts.rent','Rent','$2,905 a month.',12000,90000,240,'$'),
+    fld('facts.contrib','Into 401k + HSA','Per year.',0,70000,500,'$'),
+    fld('facts.taxable','Taxable brokerage','Your figure.',0,600000,1000,'$'),
+    fld('facts.pretax','401(k) balance','Your figure.',0,600000,1000,'$'),
+    fld('facts.pretaxP',"Partner's 401(k)",'Their balance today. Joins the household at marriage, same year their income does. Zero until you fill it in.',0,800000,1000,'$'),
+    fld('facts.roth','Roth balance','Nothing yet — your MBA sheet plans $14k in 2026-27.',0,400000,1000,'$'),
+    fld('facts.hsa','HSA balance','Your figure.',0,100000,500,'$'),
+    fld('facts.p529','529 balance','$120,424 = the pre-tuition figure from your 529 tracker, because the model still charges both school years. If you would rather start from today\'s $72,424, drop tuition for 2026 to zero.',0,300000,1000,'$'),
+    fld('facts.rsu','RSU + ESPP','End of 2026. Is this figure before or after tax at vest?',0,600000,1000,'$')
+  ].join('');
+  var A=[
+    fld('assum.realReturn','Real return','After inflation. 4% real ≈ 7% nominal at 3% inflation.',.005,.08,.0025,'%'),
+    fld('assum.vol','Volatility','How wide the fan gets. 13% is a balanced portfolio.',.03,.25,.005,'%'),
+    fld('assum.inflation','Inflation','Only touches the mortgage and the nominal view.',.01,.06,.0025,'%'),
+    fld('assum.taxDrag','Tax drag on taxable','Dividends and realised gains, per year.',0,.015,.001,'%'),
+    fld('assum.incomeRealG','Real income growth','0% means a flat real career. Probably too harsh.',-.01,.03,.0025,'%'),
+    fld('assum.spendRealG','Real spending growth','Lifestyle creep.',0,.02,.0025,'%'),
+    fld('assum.ordinaryTax','Tax on 401k withdrawals','',.10,.40,.01,'%'),
+    fld('assum.capGainsTax','Tax on gains','',.0,.35,.01,'%'),
+    fld('assum.earlyPenalty','Penalty on 401k before 59\u00bd','On top of income tax. The drawdown order can force this.',0,.2,.01,'%'),
+    fld('assum.retSpendStep','Spending at retirement','Share of your last working year.',.55,1.1,.01,'%'),
+    fld('assum.retSpendRealG','Real spending growth, retired','Negative = the retirement smile.',-.03,.02,.0025,'%'),
+    fld('assum.ssReal','Social Security','Both of you, per year, in today\'s money.',0,120000,1000,'$'),
+    fld('assum.rsuExtraVol','Extra volatility on RSU','One stock, one employer.',0,.5,.01,'%'),
+    fld('assum.houseRealApr','House appreciation, real','0% = tracks inflation.',-.02,.03,.0025,'%')
+  ].join('');
+  var D=[
+    fld('dec.retireAge','Retire at','',50,75,1,'n'),
+    fld('dec.endAge','Plan to age','',80,105,1,'n'),
+    fld('dec.ssAge','Claim Social Security at','62 cuts it ~30%; 70 raises it ~24%.',62,70,1,'n'),
+    fld('dec.postMbaBump','Pay rise from the MBA','0% assumes two years at Yale change nothing.',0,.6,.01,'%'),
+    fld('dec.partnerRatio','Partner earns','As a multiple of you. 0 = single income.',0,2,.05,'x'),
+    fld('dec.partnerConRatio',"Partner saves",'As a share of your savings rate. 1x = they put away the same fraction of pay you do.',0,2,.05,'x'),
+    fld('dec.hhSpendMult','Household spending','vs living alone.',1,2.5,.05,'x'),
+    fld('dec.marryYear','Marry in','',2026,2050,1,'n'),
+    fld('dec.housePrice','House price','Today\'s money. Inflated to the year you buy.',300000,3000000,25000,'$'),
+    fld('dec.houseYear','Buy in','',2026,2060,1,'n'),
+    fld('dec.dpPct','Down payment','',.05,.5,.01,'%'),
+    fld('dec.mortRate','Mortgage rate','',.03,.10,.00125,'%'),
+    fld('dec.ownCostPct','Tax, insurance, upkeep','Per year, share of price.',.005,.05,.0025,'%'),
+    fld('dec.kid1','First child','',2027,2050,1,'n'),
+    fld('dec.kid2','Second child','',2027,2055,1,'n'),
+    fld('dec.kidCost','Raising a child','Each, per year, to 18.',0,80000,1000,'$'),
+    fld('dec.collegeCost','College','Per child-year, today\'s money.',0,250000,5000,'$'),
+    fld('dec.tuition','Tuition, per school year','',0,150000,1000,'$'),
+    fld('dec.schSpend','Living costs at school','From your MBA budgeting sheet.',0,80000,500,'$')
+  ].join('');
+  $('levers').innerHTML=
+   band('fact','Facts','What is actually true. Record it, do not argue with it.',F)+
+   band('assum','Assumptions','What you cannot know. Stress these — that is what the fan chart is for.',A)+
+   band('dec','Decisions','The only things you control. Nearly all the leverage lives here.',D);
+}
+function band(cls,t,d,body){
+  return '<div class="band '+cls+'"><div class="hd"><div class="t">'+t+'</div><div class="d">'+d+
+    '</div></div><div class="bd"><div class="lv">'+body+'</div></div></div>';
+}
+
+/* ── life ── */
+function renderLife(){
+  var y=Y(),ev=buildEvents(),by={};
+  ev.forEach(function(e){if(!by[e.y])by[e.y]={y:e.y,cost:0,labs:[]};
+    by[e.y].cost+=e.cost||0; if(!e.quiet||e.cost>0)by[e.y].labs.push(e.lab)});
+  var ks=Object.keys(by).map(Number).sort(function(a,b){return a-b});
+  $('timeline').innerHTML=ks.map(function(k){
+    var e=by[k];
+    return '<div class="tlc'+(e.cost>0?' k':'')+'"><div class="yr">'+k+'</div><div class="lb">'+
+      esc(e.labs.slice(0,2).join(' · ')||'—')+'</div>'+
+      (e.cost?'<div class="am">'+$k(disp(e.cost,k))+'</div>':'')+
+      '<div class="ag">age '+(k-y.birth)+'</div></div>'}).join('');
+  $('customList').innerHTML=(S.custom.length?S.custom.map(function(c,i){
+    return '<div style="display:flex;gap:8px;margin-bottom:7px;align-items:center">'+
+     '<input type="number" value="'+c.y+'" style="width:88px" onchange="S.custom['+i+'].y=+this.value;save();render()">'+
+     '<input type="text" value="'+esc(c.lab)+'" onchange="S.custom['+i+'].lab=this.value;save();render()">'+
+     '<input type="number" value="'+c.cost+'" style="width:120px" onchange="S.custom['+i+'].cost=+this.value;save();render()">'+
+     '<button class="btn sm" onclick="S.custom.splice('+i+',1);save();render()">×</button></div>'}).join('')
+    :'<div style="color:var(--t5);font-size:12.5px">Nothing yet. Elder care and a sabbatical are the two most people forget.</div>');
+  var tot={};
+  ev.forEach(function(e){if(!e.cost)return;var k=e.tag;tot[k]=(tot[k]||0)+e.cost});
+  var names={school:'Two years of school',couple:'Engagement and wedding',house:'House down payment',
+             kid:'Raising two children',college:'Eight years of college',custom:'Your own additions'};
+  var all=Object.keys(tot).reduce(function(a,k){return a+tot[k]},0);
+  $('commit').innerHTML=Object.keys(tot).sort(function(a,b){return tot[b]-tot[a]}).map(function(k){
+    return '<div style="display:grid;grid-template-columns:1fr 90px 110px;gap:12px;padding:7px 0;'+
+      'border-bottom:1px solid var(--bd);font-size:13.5px">'+
+      '<span style="color:var(--t2)">'+(names[k]||k)+'</span>'+
+      '<span style="text-align:right;color:var(--t5);font-family:var(--mono);font-size:12px">'+
+        pc(tot[k]/all,0)+'</span>'+
+      '<span style="text-align:right;font-family:var(--mono);color:var(--t1)">'+$k(tot[k])+'</span></div>'}).join('')+
+    '<div style="display:grid;grid-template-columns:1fr 200px;gap:12px;padding:11px 0 0;font-size:14px">'+
+    '<span>Everything you have committed to</span><span style="text-align:right;font-family:var(--mono)">'+
+    $k(all)+'</span></div><div class="note" style="margin-bottom:0">All in today\'s money. '+
+    'The old sheet inflated these to the year they were spent, which made the same commitments look like '+
+    $k(inflatedTotal(ev))+' and buried the comparison.</div>';
+}
+function inflatedTotal(ev){var t=0;ev.forEach(function(e){if(e.cost)t+=e.cost*infl(e.y)});return t}
+function addEvent(){S.custom.push({y:Y().base+5,lab:'',cost:0});save();render()}
+
+/* ── accounts ── */
+function renderAccounts(){
+  if(!$('acctTable')) return;
+  var y=Y(),R=DET.rows,ri=y.ret-y.base;
+  var pts=[y.base,y.base+4,y.ret-1,y.ret,y.ret+10,y.end];
+  var rows=pts.map(function(p){var i=p-y.base;return R[i]}).filter(Boolean);
+  var h='<table><tr><th>Account</th><th>Tax</th>'+rows.map(function(r){
+    return '<th>'+r.y+'</th>'}).join('')+'</tr>';
+  ACCOUNTS.forEach(function(a){
+    h+='<tr><td><span class="sw" style="background:'+a.c+'"></span>'+a.nm+'</td>'+
+       '<td style="text-align:left;color:var(--t5);font-size:10.5px">'+
+       ({gains:'gains taxed',ord:'taxed on the way out',free:'tax-free',edu:'education only'}[a.tax])+'</td>'+
+       rows.map(function(r){return '<td>'+$k(disp(r.acc[a.id],r.y))+'</td>'}).join('')+'</tr>';
+  });
+  h+='<tr><td><span class="sw" style="background:#8b949e"></span>House equity</td>'+
+     '<td style="text-align:left;color:var(--t5);font-size:10.5px">illiquid</td>'+
+     rows.map(function(r){return '<td>'+$k(disp(r.eq,r.y))+'</td>'}).join('')+'</tr>';
+  h+='<tr><td class="nw">Net worth</td><td></td>'+rows.map(function(r){
+     return '<td class="nw">'+$k(disp(r.nw,r.y))+'</td>'}).join('')+'</tr></table>';
+  $('acctTable').innerHTML=h;
+  var ord=S.dec.drawOrder.split(',');
+ if($('drawOrder')) $('drawOrder').innerHTML='<div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">'+
+    ord.map(function(id,i){var a=null;ACCOUNTS.forEach(function(x){if(x.id===id)a=x});
+      return '<span style="background:var(--p2);border:1px solid var(--bd2);border-radius:7px;padding:6px 11px;'+
+       'font-size:12.5px"><span class="sw" style="background:'+(a?a.c:'#666')+'"></span>'+(a?a.nm:id)+'</span>'+
+       (i<ord.length-1?'<span style="color:var(--t5)">→</span>':'')}).join('')+'</div>'+
+    '<div class="btnrow"><button class="btn sm" onclick="cycleOrder()">Try a different order</button>'+
+    '<span style="font-size:12px;color:var(--t5)">Roth last is usually right.</span></div>';
+}
+function cycleOrder(){
+  var opts=['taxable,rsu,pretax,pretaxP,hsa,roth','taxable,rsu,pretaxP,pretax,hsa,roth',
+            'pretax,pretaxP,taxable,rsu,hsa,roth','taxable,rsu,roth,hsa,pretax,pretaxP'];
+  var i=opts.indexOf(S.dec.drawOrder); S.dec.drawOrder=opts[(i+1)%opts.length]; save(); render();
+}
+
+/* ── solve ── */
+
+
+
+
+/* ── years ── */
+function renderYears(){
+  var y=Y(),R=DET.rows;
+  $('yearsCtl').innerHTML='<span style="font-size:12.5px;color:var(--t4)">Showing '+
+    (UNIT==='real'?"today's money":'nominal dollars')+' — click the chip in the header to switch.</span>';
+  var h='<table><tr><th>Year</th><th>Age</th><th>Income</th><th>Soc Sec</th><th>Spending</th>'+
+        '<th>Big costs</th><th>401k+HSA</th><th>Left over</th><th>Growth</th><th>Liquid</th>'+
+        '<th>House</th><th>Net worth</th><th>Change</th><th>Events</th></tr>';
+  R.forEach(function(r,i){
+    var prev=i?R[i-1].nw:null, ch=prev===null?null:r.nw-prev;
+    h+='<tr class="'+(r.y>y.ret?'ret':'')+'"><td>'+r.y+'</td><td>'+r.age+'</td>'+
+      ['inc','ss','spend','big','con','net','grow','liquid','eq','nw'].map(function(k){
+        var v=disp(r[k],r.y);
+        return '<td class="'+(v<0?'neg':'')+(k==='nw'?' nw':'')+'">'+(v?$k(v):'—')+'</td>'}).join('')+
+      '<td class="'+(ch<0?'neg':'')+'">'+(ch===null?'—':$k(disp(ch,r.y)))+'</td>'+
+      '<td style="text-align:left;color:var(--t5);font-size:10.5px">'+
+        esc(r.events.map(function(e){return e.lab}).join(', '))+'</td></tr>';
+  });
+  $('tbl').innerHTML=h+'</table>';
+}
+
+
+var SENS=null,STRESS=null;
+
+/* ── stress scenarios ── */
+function drawStress(){
+  if(!STRESS) return;
+  var h='<table class="stbl"><tr><th>Scenario</th><th>What changes</th><th>Money lasts to</th></tr>';
+  STRESS.forEach(function(s){
+    var age=(!s.broke||s.broke==='never')?'95+':(s.medBroke?''+s.medBroke:'~'+(s.broke-S.facts.birthYear));
+    var col=(!s.broke||s.broke==='never')?'var(--ok)':parseInt(age)<60?'var(--bad)':'var(--warn)';
+    h+='<tr><td style="color:var(--t1)">'+esc(s.name)+'</td>'+
+       '<td><span class="desc">'+esc(s.desc)+'</span></td>'+
+       '<td style="color:'+col+';font-family:var(--mono);font-size:14px">age '+age+'</td></tr>';
+  });
+  h+='</table>';
+  h+='<div class="note w" style="margin-bottom:0">Each scenario changes multiple things at once. '+
+     '"Money lasts to" is the median age across simulations when the plan runs out.</div>';
+  $('stressTable').innerHTML=h;
+}
+
+
+/* ── chart hover tooltips ── */
+var CHART_DATA={};
+function chartHover(svgId,data){
+  CHART_DATA[svgId]=data;
+  var svg=document.getElementById(svgId);
+  if(!svg)return;
+  var tip=document.getElementById('chartTip');
+  svg.addEventListener('mousemove',function(e){
+    var d=CHART_DATA[svgId]; if(!d)return;
+    var rect=svg.getBoundingClientRect();
+    var xPct=(e.clientX-rect.left)/rect.width;
+    var idx=Math.round(xPct*(d.n-1));
+    if(idx<0)idx=0; if(idx>=d.n)idx=d.n-1;
+    var r=d.rows[idx];
+    if(!r){tip.className='tip';return}
+    var h='<div class="y">'+r.y+' <span style="color:var(--t4)">age '+r.age+'</span></div>';
+    d.series.forEach(function(s){
+      var v=s.val(r);
+      if(Math.abs(v)>0.5) h+='<div class="r"><span>'+s.nm+'</span><b>'+$k(v)+'</b></div>';
+    });
+    if(r.events&&r.events.length){
+      h+='<div class="e">'+r.events.map(function(e){return e.lab}).slice(0,3).join(' · ')+'</div>';
+    }
+    tip.innerHTML=h;
+    tip.className='tip on';
+    var tx=e.pageX+14, ty=e.pageY-60;
+    if(tx+200>window.innerWidth) tx=e.pageX-210;
+    tip.style.left=tx+'px'; tip.style.top=ty+'px';
+  });
+  svg.addEventListener('mouseleave',function(){tip.className='tip'});
+}
+
+
+/* ── milestone funding ── */
+function renderMilestones(){
+  if(!$('milestones')) return;
+  var R=DET.rows,y=Y();
+  var ms=[
+    {name:'MBA',yrs:[2026,2027],match:function(e){return e.tag==='school'},edu:1,col:'#d98fb0'},
+    {name:'Wedding',yrs:[S.dec.marryYear],match:function(e){return e.tag==='couple'&&e.lab==='Married'},col:'#ef7f7f'},
+    {name:'Raising kids',yrs:function(){var a=[];for(var i=S.dec.kid1;i<S.dec.kid1+18;i++)a.push(i);
+      for(var i=S.dec.kid2;i<S.dec.kid2+18;i++)if(a.indexOf(i)<0)a.push(i);return a.sort(function(x,y2){return x-y2})}(),
+      match:function(e){return e.tag==='kid'},col:'#b294e8'},
+    {name:'House',yrs:[S.dec.houseYear],match:function(e){return e.tag==='house'},col:'#e8b16a'},
+    {name:'College',yrs:function(){var a=[];for(var k=0;k<4;k++){a.push(S.dec.kid1+18+k);a.push(S.dec.kid2+18+k)}
+      return a.filter(function(v,i,s){return s.indexOf(v)===i}).sort(function(x,y2){return x-y2})}(),
+      match:function(e){return e.college},edu:1,col:'#d98fb0'}
+  ];
+
+  var maxCost=0;
+  ms.forEach(function(m2){var c=0;m2.yrs.forEach(function(yr){
+    var idx=yr-y.base;if(idx<0||idx>=R.length)return;
+    R[idx].events.forEach(function(e){if(m2.match(e))c+=e.cost||0})});m2.cost=c;maxCost=Math.max(maxCost,c)});
+
+  var h='';
+  ms.forEach(function(m2){
+    var f529=0;
+    if(m2.edu) m2.yrs.forEach(function(yr){var idx=yr-y.base;if(idx>=0&&idx<R.length)f529+=R[idx].from529||0});
+    var fromInc=Math.max(0,m2.cost-f529);
+    var barW=Math.round(m2.cost/maxCost*100);
+    var f529W=Math.round(f529/m2.cost*100)||0;
+
+    h+='<div style="display:grid;grid-template-columns:90px 1fr 70px;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd)">';
+    h+='<span style="font-size:13px;color:var(--t2)">'+m2.name+'</span>';
+    h+='<div style="position:relative">';
+    h+='<div style="height:20px;border-radius:4px;overflow:hidden;display:flex;width:'+barW+'%">';
+    if(f529>0) h+='<div style="width:'+f529W+'%;background:#d98fb0;position:relative" title="529: '+$k(f529)+'"></div>';
+    h+='<div style="flex:1;background:'+m2.col+';opacity:.5" title="Income: '+$k(fromInc)+'"></div>';
+    h+='</div></div>';
+    h+='<span style="font-family:var(--mono);font-size:12px;color:var(--t2);text-align:right">'+$k(m2.cost)+'</span>';
+    h+='</div>';
+  });
+  $('milestones').innerHTML=h;
+}
+
+
+/* ── contribution timeline ── */
+function renderContribTimeline(){
+  if(!$('contribTimeline')) return;
+  var R=DET.rows,y=Y();
+  /* build a bar chart: green = saving, gray = paused, with amounts */
+  var maxCon=0;
+  R.forEach(function(r){if(r.y<=y.ret) maxCon=Math.max(maxCon,r.con)});
+  if(maxCon<1) maxCon=1;
+
+  var W=900,H=120,padL=60,padR=10,padT=20,padB=24;
+  var n=y.ret-y.base+1;
+  var cw=(W-padL-padR)/n, ch=H-padT-padB;
+  function X(i){return padL+i*cw}
+  function Yc(v){return padT+ch-ch*v/maxCon}
+
+  var svg='<svg class="ch" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet">';
+
+  /* y-axis grid */
+  [0,.5,1].forEach(function(f){
+    var gv=maxCon*f, gy=Yc(gv);
+    svg+='<line x1="'+padL+'" y1="'+gy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+gy.toFixed(1)+'" stroke="var(--bd)" stroke-width=".5"/>';
+    svg+='<text x="'+(padL-4)+'" y="'+(gy+3)+'" fill="var(--t5)" font-size="9" text-anchor="end">'+$k(gv)+'</text>';
+  });
+
+  /* bars */
+  var pauseStart=null,pauseEnd=null;
+  for(var i=0;i<n;i++){
+    var r=R[i];
+    var bh=ch*r.con/maxCon;
+    var saving=r.con>1000;
+    var col=saving?'var(--ok)':'var(--bd2)';
+    svg+='<rect x="'+X(i).toFixed(1)+'" y="'+(padT+ch-bh).toFixed(1)+'" width="'+Math.max(1,cw-1).toFixed(1)+
+         '" height="'+Math.max(1,bh).toFixed(1)+'" fill="'+col+'" opacity="'+(saving?'.7':'.3')+
+         '"><title>'+r.y+' age '+r.age+': '+$k(r.con)+'/yr saved</title></rect>';
+    if(!saving&&pauseStart===null) pauseStart=r.y;
+    if(!saving) pauseEnd=r.y;
+  }
+
+  /* year labels */
+  [0,5,10,15,20,25,30,n-1].forEach(function(i){if(i>=n)return;
+    svg+='<text x="'+(X(i)+cw/2).toFixed(1)+'" y="'+(H-4)+'" fill="var(--t5)" font-size="9" text-anchor="middle">'+R[i].y+'</text>'});
+
+  /* "paused" label */
+  if(pauseStart&&pauseEnd){
+    var pi1=(pauseStart-y.base), pi2=(pauseEnd-y.base);
+    var mx=(X(pi1)+X(pi2))/2+cw/2;
+    svg+='<text x="'+mx.toFixed(1)+'" y="'+(padT+ch/2+3)+'" fill="var(--t4)" font-size="10" text-anchor="middle">savings paused</text>';
+    svg+='<text x="'+mx.toFixed(1)+'" y="'+(padT+ch/2+15)+'" fill="var(--t5)" font-size="8" text-anchor="middle">'+pauseStart+' – '+pauseEnd+' (ages '+(pauseStart-y.birth)+'–'+(pauseEnd-y.birth)+')</text>';
+  }
+
+  svg+='</svg>';
+
+  /* summary */
+  var totalSaved=0,totalIdeal=0;
+  R.forEach(function(r){if(r.y<=y.ret){totalSaved+=r.con; totalIdeal+=S.facts.contrib*2}});
+  var note='<div style="font-size:12.5px;color:var(--t3);margin-top:8px;line-height:1.7">'+
+    'Green bars = years you\'re contributing to 401(k) + HSA. Gray = paused because income doesn\'t cover expenses. '+
+    'Total saved over your career: <b style="color:var(--t1)">'+$k(totalSaved)+'</b>'+
+    (pauseStart?' (vs '+$k(totalIdeal)+' if you never paused). The '+
+    (pauseEnd-pauseStart+1)+' paused years are when kids + housing eat everything.':'')+'</div>';
+
+  $('contribTimeline').innerHTML=svg+note;
+}
+
+
+/* ── income flow: where every dollar goes ── */
+function renderIncomeFlow(){
+  if(!$('incomeFlow')) return;
+  var R=DET.rows,y=Y();
+  /* show key years as a horizontal stacked bar */
+  var keyYrs=[2026,2028,2030,2032,2035,2036,2040,2050,2053,2056,2059,2060];
+  var cats=[
+    {name:'Living',col:'#7fa9ef',val:function(r){return r.spend}},
+    {name:'Kids',col:'#b294e8',val:function(r){
+      var k=0;r.events.forEach(function(e){if(e.tag==='kid')k+=e.cost||0});return k}},
+    {name:'College',col:'#d98fb0',val:function(r){
+      var c=0;r.events.forEach(function(e){if(e.college)c+=e.cost||0});return c}},
+    {name:'House',col:'#e8b16a',val:function(r){return Math.max(0,r.hous)+(r.events.some(function(e){return e.tag==='house'})?S.dec.housePrice*S.dec.dpPct:0)}},
+    {name:'Wedding',col:'#ef7f7f',val:function(r){
+      var w=0;r.events.forEach(function(e){if(e.tag==='couple')w+=e.cost||0});return w}},
+    {name:'529',col:'#d98fb0',val:function(r){return 0}},  /* 529 contrib is in the to529 var, not directly accessible here */
+    {name:'Saved',col:'#5fd4a4',val:function(r){return r.con}},
+    {name:'Health',col:'#6fc4d4',val:function(r){return 0}}
+  ];
+  /* simpler: just use the data we have */
+  var maxOut=0;
+  keyYrs.forEach(function(yr){
+    var r=R[yr-y.base]; if(!r) return;
+    maxOut=Math.max(maxOut,r.spend+r.big+r.con);
+  });
+
+  var h='<table style="font-size:12.5px"><tr><th style="text-align:left;width:60px">Year</th><th style="text-align:left;width:40px">Age</th>'+
+    '<th style="text-align:left">Income</th><th style="text-align:left">Breakdown</th><th style="text-align:right">From savings</th></tr>';
+  
+  keyYrs.forEach(function(yr){
+    var r=R[yr-y.base]; if(!r||r.y>y.ret) return;
+    var kidCost=0,collegeCost=0,wedding=0,house=0,school=0;
+    r.events.forEach(function(e){
+      if(e.tag==='kid') kidCost+=e.cost||0;
+      if(e.college) collegeCost+=e.cost||0;
+      if(e.tag==='couple') wedding+=e.cost||0;
+      if(e.tag==='house') house+=e.cost||0;
+      if(e.tag==='school') school+=e.cost||0;
+    });
+    var housing=Math.max(0,r.hous);
+    var totalOut=r.spend+r.big+r.con;
+    var fromSavings=0;
+    ACCOUNTS.forEach(function(a){fromSavings+=(r.wd[a.id]||0)});
+    fromSavings+=r.from529||0;
+
+    /* stacked bar */
+    var barW=300;
+    var segments=[];
+    if(r.spend>0) segments.push({w:r.spend/totalOut*barW,c:'#7fa9ef',l:'Living '+$k(r.spend)});
+    if(kidCost>0) segments.push({w:kidCost/totalOut*barW,c:'#b294e8',l:'Kids '+$k(kidCost)});
+    if(collegeCost>0) segments.push({w:collegeCost/totalOut*barW,c:'#d98fb0',l:'College '+$k(collegeCost)});
+    if(housing>0) segments.push({w:housing/totalOut*barW,c:'#e8b16a',l:'Housing '+$k(housing)});
+    if(house>0) segments.push({w:house/totalOut*barW,c:'#e8b16a',l:'Deposit '+$k(house)});
+    if(wedding>0) segments.push({w:wedding/totalOut*barW,c:'#ef7f7f',l:'Wedding '+$k(wedding)});
+    if(school>0) segments.push({w:school/totalOut*barW,c:'#d98fb0',l:'Tuition '+$k(school)});
+    if(r.con>0) segments.push({w:r.con/totalOut*barW,c:'#5fd4a4',l:'Saved '+$k(r.con)});
+
+    var bar='<div style="display:flex;height:24px;border-radius:3px;overflow:hidden;width:'+barW+'px" title="'+
+      segments.map(function(s){return s.l}).join(' | ')+'">';
+    segments.forEach(function(s){
+      bar+='<div style="width:'+Math.max(3,s.w).toFixed(0)+'px;background:'+s.c+';opacity:.7;cursor:pointer" title="'+s.l+'" onmouseenter="this.style.opacity=1;this.style.outline=\'2px solid '+s.c+'\'" onmouseleave="this.style.opacity=.7;this.style.outline=\'none\'"></div>';
+    });
+    bar+='</div>';
+    bar+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">';
+    segments.forEach(function(s){
+      if(s.w>12) bar+='<span style="font-size:9px;color:'+s.c+'">'+s.l+'</span>';
+    });
+    bar+='</div>';
+
+    var evLabel=r.events.filter(function(e){return !e.quiet}).map(function(e){return e.lab}).slice(0,2).join(', ');
+
+    h+='<tr><td>'+r.y+'</td><td>'+r.age+'</td>'+
+       '<td style="font-family:var(--mono);font-size:11.5px">'+$k(r.inc)+'</td>'+
+       '<td>'+bar+'<div style="font-size:10px;color:var(--t5);margin-top:2px">'+evLabel+'</div></td>'+
+       '<td style="text-align:right;font-family:var(--mono);font-size:11.5px;color:'+(fromSavings>500?'var(--warn)':'var(--t5)')+'">'+
+       (fromSavings>500?$k(fromSavings):'—')+'</td></tr>';
+  });
+  h+='</table>';
+  h+='<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;font-size:10.5px;color:var(--t4)">'+
+     '<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#7fa9ef;margin-right:4px;vertical-align:middle"></span>Living</span>'+
+     '<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#b294e8;margin-right:4px;vertical-align:middle"></span>Kids</span>'+
+     '<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#d98fb0;margin-right:4px;vertical-align:middle"></span>College/Tuition</span>'+
+     '<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#e8b16a;margin-right:4px;vertical-align:middle"></span>Housing</span>'+
+     '<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ef7f7f;margin-right:4px;vertical-align:middle"></span>Wedding</span>'+
+     '<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#5fd4a4;margin-right:4px;vertical-align:middle"></span>Saved</span></div>';
+  $('incomeFlow').innerHTML=h;
+}
+
+/* ══════════════ orchestration ══════════════ */
+function render(){
+  DET=run();
+  tiles(); drawStack(); renderLife(); drawDrawdown(); renderYears();
+  clearTimeout(TORQ);
+  setTimeout(function(){ MCR=mc(1200,4242); tiles();
+    TORQ=setTimeout(function(){ TOR=tornado(); drawTornado();
+      setTimeout(function(){ INS=insights(); tiles();
+        setTimeout(function(){ STRESS=stressAll(); drawStress(); },20);
+      },20);
+    },20);
+  },0);
+}
+function resetAll(){if(confirm('Reset every input to the starting values?')){S=clone(DEFAULTS);save();render()}}
+function exportJson(){
+  var b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  var u=URL.createObjectURL(b),a=document.createElement('a');
+  a.href=u;a.download='forecast.json';a.click();setTimeout(function(){URL.revokeObjectURL(u)},800);
+}
+function importJson(el){
+  var f=el.files&&el.files[0];if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){try{var v=JSON.parse(rd.result);
+    if(v&&v.facts){var d=clone(DEFAULTS);
+      ['facts','assum','dec'].forEach(function(k){for(var i in v[k])if(i in d[k])d[k][i]=v[k][i]});
+      d.custom=v.custom||[];d.unknown=v.unknown||{};S=d;save();render()}
+  }catch(e){alert('Could not read that file.')}};
+  rd.readAsText(f);el.value='';
+}
+document.addEventListener('keydown',function(e){
+  if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
+  var k=['verdict','life'][+e.key-1];
+  if(k)go(k);
+});
+render();
+</script>
+
+</body>
+</html>
